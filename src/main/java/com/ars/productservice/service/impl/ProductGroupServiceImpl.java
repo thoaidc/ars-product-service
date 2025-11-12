@@ -1,6 +1,7 @@
 package com.ars.productservice.service.impl;
 
 import com.ars.productservice.dto.request.SaveProductGroupRequest;
+import com.ars.productservice.dto.response.ProductGroupResponseDTO;
 import com.ars.productservice.entity.ProductGroup;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.service.ProductGroupService;
@@ -10,6 +11,7 @@ import com.dct.model.exception.BaseBadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,7 +26,9 @@ public class ProductGroupServiceImpl implements ProductGroupService {
 
     @Override
     public BaseResponseDTO getAllWithPaging(BaseRequestDTO requestDTO) {
-        return null;
+        List<ProductGroupResponseDTO> productGroups = productGroupRepository.getAllWithPaging(requestDTO);
+        Long count = productGroupRepository.count();
+        return BaseResponseDTO.builder().total(count).ok(productGroups);
     }
 
     @Override

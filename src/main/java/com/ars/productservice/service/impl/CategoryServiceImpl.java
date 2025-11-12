@@ -1,6 +1,7 @@
 package com.ars.productservice.service.impl;
 
 import com.ars.productservice.dto.request.SaveCategoryRequest;
+import com.ars.productservice.dto.response.CategoryResponseDTO;
 import com.ars.productservice.entity.Category;
 import com.ars.productservice.repository.CategoryRepository;
 import com.ars.productservice.service.CategoryService;
@@ -10,6 +11,7 @@ import com.dct.model.exception.BaseBadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,7 +26,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public BaseResponseDTO getAllWithPaging(BaseRequestDTO requestDTO) {
-        return null;
+        List<CategoryResponseDTO> categories = categoryRepository.getAllWithPaging(requestDTO);
+        Long count = categoryRepository.count();
+        return BaseResponseDTO.builder().total(count).ok(categories);
     }
 
     @Override
