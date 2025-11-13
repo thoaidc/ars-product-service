@@ -1,8 +1,8 @@
 package com.ars.productservice.resource;
 
-import com.ars.productservice.dto.request.SaveProductGroupRequest;
+import com.ars.productservice.dto.request.product.SaveProductGroupRequest;
+import com.ars.productservice.dto.request.product.SearchProductGroupRequest;
 import com.ars.productservice.service.ProductGroupService;
-import com.dct.model.dto.request.BaseRequestDTO;
 import com.dct.model.dto.response.BaseResponseDTO;
 
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +26,7 @@ public class ProductGroupResource {
     }
 
     @GetMapping("/p/v1/products/groups")
-    public BaseResponseDTO getAllProductGroups(@ModelAttribute BaseRequestDTO requestDTO) {
+    public BaseResponseDTO getAllProductGroups(@ModelAttribute SearchProductGroupRequest requestDTO) {
         return productGroupService.getAllWithPaging(requestDTO);
     }
 

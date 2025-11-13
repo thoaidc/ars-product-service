@@ -1,10 +1,9 @@
 package com.ars.productservice.repository;
 
-import com.ars.productservice.dto.response.CategoryResponseDTO;
+import com.ars.productservice.dto.response.category.CategoryResponseDTO;
 import com.dct.model.dto.request.BaseRequestDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface CategoryRepositoryCustom {
-    List<CategoryResponseDTO> getAllWithPaging(BaseRequestDTO requestDTO);
+    Page<CategoryResponseDTO> getAllWithPaging(BaseRequestDTO requestDTO);
 }

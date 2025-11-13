@@ -1,12 +1,33 @@
-package com.ars.productservice.dto.response;
+package com.ars.productservice.dto.request.product;
 
-import com.dct.model.dto.response.AuditingDTO;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class ProductGroupResponseDTO extends AuditingDTO {
+public class SaveProductGroupRequest {
+    private Integer id;
+
+    @NotNull
     private Integer shopId;
+
+    @NotBlank
+    @Max(value = 200)
     private String name;
+
+    @NotBlank
+    @Max(value = 50)
     private String code;
+
+    @Max(value = 1000)
     private String description;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Integer getShopId() {
         return shopId;

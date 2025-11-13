@@ -1,16 +1,16 @@
 package com.ars.productservice.repository.impl;
 
-import com.ars.productservice.dto.response.CategoryResponseDTO;
+import com.ars.productservice.dto.response.category.CategoryResponseDTO;
 import com.ars.productservice.repository.CategoryRepositoryCustom;
+import com.dct.config.common.SqlUtils;
 import com.dct.model.dto.request.BaseRequestDTO;
+
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Repository
 public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
@@ -21,19 +21,19 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     }
 
     @Override
-    public List<CategoryResponseDTO> getAllWithPaging(BaseRequestDTO requestDTO) {
-        StringBuilder sql = new StringBuilder("SELECT c.id, c.name, c.code FROM category c WHERE 1=1");
+    public Page<CategoryResponseDTO> getAllWithPaging(BaseRequestDTO requestDTO) {
+        String countSql = "SELECT COUNT(*)";
+        String querySql = "SELECT c.id, c.name, c.code, c.description, c.created_by as createdBy, c.created_date as createdDate";
+        StringBuilder whereConditions = new StringBuilder(" FROM category c WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
-
-        if (Objects.nonNull(requestDTO.getFromDateSearch()) && Objects.nonNull(requestDTO.getToDateSearch())) {
-            sql.append(" AND c.createdBy BETWEEN :fromDate AND :toDate");
-            params.put("fromDate", requestDTO.getFromDateSearch());
-            params.put("toDate", requestDTO.getToDateSearch());
-        }
-
-        Query query = entityManager.createNativeQuery(sql.toString(), "categoryGetWithPaging");
-        params.forEach(query::setParameter);
-        //noinspection unchecked
-        return (List<CategoryResponseDTO>) query.getResultList();
+        SqlUtils.appendDateCondition(whereConditions, params, requestDTO, "c.created_date");
+        SqlUtils.appendSqlLikeCondition(whereConditions, params, "c.name", requestDTO.getKeyword());
+        SqlUtils.setOrderByDecreasing(whereConditions, "c.created_date");
+        return SqlUtils.queryBuilder(entityManager)
+                .querySql(querySql + whereConditions)
+                .countQuerySql(countSql + whereConditions)
+                .pageable(requestDTO.getPageable())
+                .params(params)
+                .getResultsWithPaging("categoryGetWithPaging");
     }
 }

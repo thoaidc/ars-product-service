@@ -1,10 +1,34 @@
 package com.ars.productservice.entity;
 
+import com.ars.productservice.dto.response.product.ProductGroupResponseDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.*;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "product_group")
+@SqlResultSetMappings(
+    {
+        @SqlResultSetMapping(
+            name = "productGroupGetWithPaging",
+            classes = {
+                @ConstructorResult(
+                    targetClass = ProductGroupResponseDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Integer.class),
+                        @ColumnResult(name = "shopId", type = Integer.class),
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "code", type = String.class),
+                        @ColumnResult(name = "description", type = String.class),
+                        @ColumnResult(name = "createdBy", type = String.class),
+                        @ColumnResult(name = "createdDate", type = Instant.class)
+                    }
+                )
+            }
+        )
+    }
+)
 @SuppressWarnings("unused")
 public class ProductGroup extends AbstractAuditingEntity {
 

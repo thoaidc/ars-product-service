@@ -1,11 +1,29 @@
-package com.ars.productservice.dto.response;
+package com.ars.productservice.dto.response.category;
 
 import com.dct.model.dto.response.AuditingDTO;
+
+import java.time.Instant;
 
 public class CategoryResponseDTO extends AuditingDTO {
     private String name;
     private String code;
     private String description;
+
+    public CategoryResponseDTO(
+        Integer id,
+        String name,
+        String code,
+        String description,
+        String createdBy,
+        Instant createdDate
+    ) {
+        this.name = name;
+        this.code = code;
+        this.description = description;
+        setId(id);
+        setCreatedBy(createdBy);
+        setCreatedDate(createdDate);
+    }
 
     public String getName() {
         return name;

@@ -1,17 +1,18 @@
 package com.ars.productservice.service.impl;
 
-import com.ars.productservice.dto.request.SaveProductGroupRequest;
-import com.ars.productservice.dto.response.ProductGroupResponseDTO;
+import com.ars.productservice.dto.request.product.SaveProductGroupRequest;
+import com.ars.productservice.dto.request.product.SearchProductGroupRequest;
+import com.ars.productservice.dto.response.product.ProductGroupResponseDTO;
 import com.ars.productservice.entity.ProductGroup;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.service.ProductGroupService;
-import com.dct.model.dto.request.BaseRequestDTO;
 import com.dct.model.dto.response.BaseResponseDTO;
 import com.dct.model.exception.BaseBadRequestException;
+
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,10 +26,9 @@ public class ProductGroupServiceImpl implements ProductGroupService {
     }
 
     @Override
-    public BaseResponseDTO getAllWithPaging(BaseRequestDTO requestDTO) {
-        List<ProductGroupResponseDTO> productGroups = productGroupRepository.getAllWithPaging(requestDTO);
-        Long count = productGroupRepository.count();
-        return BaseResponseDTO.builder().total(count).ok(productGroups);
+    public BaseResponseDTO getAllWithPaging(SearchProductGroupRequest requestDTO) {
+        Page<ProductGroupResponseDTO> productGroupPage = productGroupRepository.getAllWithPaging(requestDTO);
+        return BaseResponseDTO.builder().total(productGroupPage.getTotalElements()).ok(productGroupPage.getContent());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.ars.productservice.dto.request;
+package com.ars.productservice.dto.request.category;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;

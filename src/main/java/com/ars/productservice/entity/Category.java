@@ -1,6 +1,6 @@
 package com.ars.productservice.entity;
 
-import com.ars.productservice.dto.response.CategoryResponseDTO;
+import com.ars.productservice.dto.response.category.CategoryResponseDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.*;
 
@@ -21,9 +21,7 @@ import java.time.Instant;
                         @ColumnResult(name = "code", type = String.class),
                         @ColumnResult(name = "description", type = String.class),
                         @ColumnResult(name = "createdBy", type = String.class),
-                        @ColumnResult(name = "lastModifiedBy", type = String.class),
-                        @ColumnResult(name = "createdDate", type = Instant.class),
-                        @ColumnResult(name = "lastModifiedDate", type = Instant.class)
+                        @ColumnResult(name = "createdDate", type = Instant.class)
                     }
                 ),
             }

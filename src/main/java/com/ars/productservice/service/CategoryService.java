@@ -1,6 +1,6 @@
 package com.ars.productservice.service;
 
-import com.ars.productservice.dto.request.SaveCategoryRequest;
+import com.ars.productservice.dto.request.category.SaveCategoryRequest;
 import com.dct.model.dto.request.BaseRequestDTO;
 import com.dct.model.dto.response.BaseResponseDTO;
 
