@@ -8,27 +8,25 @@ import jakarta.persistence.*;
 @SuppressWarnings("unused")
 public class VariantOption extends AbstractAuditingEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id", nullable = false)
-    private Variant variant;
+    @Column(name = "variant_id", nullable = false)
+    private Integer variantId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_option_id", nullable = false)
-    private ProductOption productOption;
+    @Column(name = "product_option_id", nullable = false)
+    private Integer productOptionId;
 
-    public Variant getVariant() {
-        return variant;
+    public Integer getVariantId() {
+        return variantId;
     }
 
-    public void setVariant(Variant variant) {
-        this.variant = variant;
+    public void setVariantId(Integer variantId) {
+        this.variantId = variantId;
     }
 
-    public ProductOption getProductOption() {
-        return productOption;
+    public Integer getProductOptionId() {
+        return productOptionId;
     }
 
-    public void setProductOption(ProductOption productOption) {
-        this.productOption = productOption;
+    public void setProductOptionId(Integer productOptionId) {
+        this.productOptionId = productOptionId;
     }
 }

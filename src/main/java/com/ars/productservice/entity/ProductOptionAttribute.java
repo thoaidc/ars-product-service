@@ -8,9 +8,8 @@ import jakarta.persistence.*;
 @SuppressWarnings("unused")
 public class ProductOptionAttribute extends AbstractAuditingEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_option_id", nullable = false)
-    private ProductOption productOption;
+    @Column(name = "product_option_id", nullable = false)
+    private Integer productOptionId;
 
     @Column
     private String image;
@@ -18,12 +17,12 @@ public class ProductOptionAttribute extends AbstractAuditingEntity {
     @Column
     private String text;
 
-    public ProductOption getProductOption() {
-        return productOption;
+    public Integer getProductOptionId() {
+        return productOptionId;
     }
 
-    public void setProductOption(ProductOption productOption) {
-        this.productOption = productOption;
+    public void setProductOptionId(Integer productOptionId) {
+        this.productOptionId = productOptionId;
     }
 
     public String getImage() {

@@ -34,22 +34,39 @@ public class Product extends AbstractAuditingEntity {
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
 
+    @Column(name = "original_image")
+    private String originalImage;
+
     @Column(name = "normalized_name")
     private String normalizedName;
 
     @Column(length = 500)
     private String keyword;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<ProductProductGroup> productGroups;
+    @ManyToMany(
+        cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH },
+        fetch = FetchType.LAZY
+    )
+    @JoinTable(
+        name = "product_product_group",
+        joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "product_group_id", referencedColumnName = "id")
+    )
+    private List<ProductGroup> productGroups;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<ProductCategory> categories;
+    @ManyToMany(
+        cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH },
+        fetch = FetchType.LAZY
+    )
+    @JoinTable(
+        name = "product_category",
+        joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id")
+    )
+    private List<Category> categories;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<Variant> variants;
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", referencedColumnName="id")
     private List<ProductOption> options;
 
     public Integer getShopId() {
@@ -116,6 +133,14 @@ public class Product extends AbstractAuditingEntity {
         this.thumbnailUrl = thumbnailUrl;
     }
 
+    public String getOriginalImage() {
+        return originalImage;
+    }
+
+    public void setOriginalImage(String originalImage) {
+        this.originalImage = originalImage;
+    }
+
     public String getNormalizedName() {
         return normalizedName;
     }
@@ -132,28 +157,20 @@ public class Product extends AbstractAuditingEntity {
         this.keyword = keyword;
     }
 
-    public List<ProductProductGroup> getProductGroups() {
+    public List<ProductGroup> getProductGroups() {
         return productGroups;
     }
 
-    public void setProductGroups(List<ProductProductGroup> productGroups) {
+    public void setProductGroups(List<ProductGroup> productGroups) {
         this.productGroups = productGroups;
     }
 
-    public List<ProductCategory> getCategories() {
+    public List<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<ProductCategory> categories) {
+    public void setCategories(List<Category> categories) {
         this.categories = categories;
-    }
-
-    public List<Variant> getVariants() {
-        return variants;
-    }
-
-    public void setVariants(List<Variant> variants) {
-        this.variants = variants;
     }
 
     public List<ProductOption> getOptions() {

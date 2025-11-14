@@ -11,21 +11,43 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class Variant extends AbstractAuditingEntity {
 
+    @Column(name = "product_id", nullable = false)
+    private Integer productId;
+
+    @Column(name = "attribute_id", nullable = false)
+    private Integer attributeId;
+
     @Column(length = 200, nullable = false)
     private String name;
 
     @Column(precision = 21, scale = 6)
     private BigDecimal price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
 
-    @Column(name = "attribute_id", nullable = false)
-    private Integer attributeId;
+    @Column(name = "original_image")
+    private String originalImage;
 
-    @OneToMany(mappedBy = "variant", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "variant_id", referencedColumnName = "id")
     private List<VariantOption> variantOptions;
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
+    public Integer getAttributeId() {
+        return attributeId;
+    }
+
+    public void setAttributeId(Integer attributeId) {
+        this.attributeId = attributeId;
+    }
 
     public String getName() {
         return name;
@@ -43,20 +65,20 @@ public class Variant extends AbstractAuditingEntity {
         this.price = price;
     }
 
-    public Product getProduct() {
-        return product;
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
-    public Integer getAttributeId() {
-        return attributeId;
+    public String getOriginalImage() {
+        return originalImage;
     }
 
-    public void setAttributeId(Integer attributeId) {
-        this.attributeId = attributeId;
+    public void setOriginalImage(String originalImage) {
+        this.originalImage = originalImage;
     }
 
     public List<VariantOption> getVariantOptions() {

@@ -8,27 +8,25 @@ import jakarta.persistence.*;
 @SuppressWarnings("unused")
 public class ProductProductGroup extends AbstractAuditingEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "product_id", nullable = false)
+    private Integer productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_group_id", nullable = false)
-    private ProductGroup productGroup;
+    @Column(name = "product_group_id", nullable = false)
+    private Integer productGroupId;
 
-    public Product getProduct() {
-        return product;
+    public Integer getProductId() {
+        return productId;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
-    public ProductGroup getProductGroup() {
-        return productGroup;
+    public Integer getProductGroupId() {
+        return productGroupId;
     }
 
-    public void setProductGroup(ProductGroup productGroup) {
-        this.productGroup = productGroup;
+    public void setProductGroupId(Integer productGroupId) {
+        this.productGroupId = productGroupId;
     }
 }

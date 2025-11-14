@@ -9,9 +9,8 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class ProductOption extends AbstractAuditingEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "product_id", nullable = false)
+    private Integer productId;
 
     @Column(length = 100, nullable = false)
     private String name;
@@ -19,24 +18,34 @@ public class ProductOption extends AbstractAuditingEntity {
     @Column(length = 50, nullable = false)
     private String type;
 
+    @Column(name = "top_percentage")
+    private Float topPercentage;
+
+    @Column(name = "left_percentage")
+    private Float leftPercentage;
+
+    @Column(name = "width_percentage")
+    private Float widthPercentage;
+
+    @Column(name = "height_percentage")
+    private Float heightPercentage;
+
     @Column
     private String description;
 
-    @Column(columnDefinition = "json")
+    @Column(length = 2000)
     private String data;
 
-    @OneToMany(mappedBy = "productOption", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_option_id", referencedColumnName = "id")
     private List<ProductOptionAttribute> attributes;
 
-    @OneToMany(mappedBy = "productOption", fetch = FetchType.LAZY)
-    private List<VariantOption> variantOptions;
-
-    public Product getProduct() {
-        return product;
+    public Integer getProductId() {
+        return productId;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
     public String getName() {
@@ -53,6 +62,38 @@ public class ProductOption extends AbstractAuditingEntity {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Float getTopPercentage() {
+        return topPercentage;
+    }
+
+    public void setTopPercentage(Float topPercentage) {
+        this.topPercentage = topPercentage;
+    }
+
+    public Float getLeftPercentage() {
+        return leftPercentage;
+    }
+
+    public void setLeftPercentage(Float leftPercentage) {
+        this.leftPercentage = leftPercentage;
+    }
+
+    public Float getWidthPercentage() {
+        return widthPercentage;
+    }
+
+    public void setWidthPercentage(Float widthPercentage) {
+        this.widthPercentage = widthPercentage;
+    }
+
+    public Float getHeightPercentage() {
+        return heightPercentage;
+    }
+
+    public void setHeightPercentage(Float heightPercentage) {
+        this.heightPercentage = heightPercentage;
     }
 
     public String getDescription() {
@@ -77,13 +118,5 @@ public class ProductOption extends AbstractAuditingEntity {
 
     public void setAttributes(List<ProductOptionAttribute> attributes) {
         this.attributes = attributes;
-    }
-
-    public List<VariantOption> getVariantOptions() {
-        return variantOptions;
-    }
-
-    public void setVariantOptions(List<VariantOption> variantOptions) {
-        this.variantOptions = variantOptions;
     }
 }
