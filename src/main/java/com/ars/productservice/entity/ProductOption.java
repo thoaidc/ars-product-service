@@ -36,8 +36,7 @@ public class ProductOption extends AbstractAuditingEntity {
     @Column(length = 2000)
     private String data;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_option_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "productOption", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductOptionAttribute> attributes;
 
     public Integer getProductId() {

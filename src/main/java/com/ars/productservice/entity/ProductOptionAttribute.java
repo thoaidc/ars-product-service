@@ -1,6 +1,7 @@
 package com.ars.productservice.entity;
 
 import com.dct.config.entity.AbstractAuditingEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,8 +9,13 @@ import jakarta.persistence.*;
 @SuppressWarnings("unused")
 public class ProductOptionAttribute extends AbstractAuditingEntity {
 
-    @Column(name = "product_option_id", nullable = false)
+    @Column(name = "product_option_id", nullable = false, insertable = false, updatable = false)
     private Integer productOptionId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_option_id", nullable = false)
+    @JsonIgnore
+    private ProductOption productOption;
 
     @Column
     private String image;
@@ -39,6 +45,14 @@ public class ProductOptionAttribute extends AbstractAuditingEntity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public ProductOption getProductOption() {
+        return productOption;
+    }
+
+    public void setProductOption(ProductOption productOption) {
+        this.productOption = productOption;
     }
 }
 

@@ -1,12 +1,40 @@
 package com.ars.productservice.entity;
 
+import com.ars.productservice.dto.response.product.ProductDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
 @Table(name = "product")
+@SqlResultSetMappings(
+    {
+        @SqlResultSetMapping(
+            name = "productGetWithPaging",
+            classes = {
+                @ConstructorResult(
+                    targetClass = ProductDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Integer.class),
+                        @ColumnResult(name = "shopId", type = Integer.class),
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "code", type = String.class),
+                        @ColumnResult(name = "price", type = BigDecimal.class),
+                        @ColumnResult(name = "description", type = String.class),
+                        @ColumnResult(name = "customizable", type = Boolean.class),
+                        @ColumnResult(name = "status", type = String.class),
+                        @ColumnResult(name = "thumbnailUrl", type = String.class),
+                        @ColumnResult(name = "originalImage", type = String.class),
+                        @ColumnResult(name = "createdBy", type = String.class),
+                        @ColumnResult(name = "createdDate", type = Instant.class)
+                    }
+                ),
+            }
+        )
+    }
+)
 @SuppressWarnings("unused")
 public class Product extends AbstractAuditingEntity {
 

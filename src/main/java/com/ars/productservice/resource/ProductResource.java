@@ -1,10 +1,56 @@
 package com.ars.productservice.resource;
 
+import com.ars.productservice.dto.request.product.CreateProductRequest;
+import com.ars.productservice.dto.request.product.SearchProductRequest;
+import com.ars.productservice.service.ProductService;
+import com.dct.model.dto.response.BaseResponseDTO;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class ProductResource {
+    private final ProductService productService;
 
+    public ProductResource(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @GetMapping("/p/v1/products")
+    public BaseResponseDTO getAllWithPaging(@ModelAttribute SearchProductRequest request) {
+        return productService.getAllWithPaging(request);
+    }
+
+    @PostMapping("/v1/products")
+    public BaseResponseDTO createProduct(@Valid @ModelAttribute CreateProductRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errors = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.joining("; "));
+            return BaseResponseDTO.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .success(Boolean.FALSE)
+                    .message(errors)
+                    .build();
+        }
+
+        return productService.create(request);
+    }
+
+    @DeleteMapping("/v1/products/{productId}")
+    public BaseResponseDTO delete(@PathVariable Integer productId) {
+        return productService.delete(productId);
+    }
 }

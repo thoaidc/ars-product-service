@@ -1,7 +1,7 @@
 package com.ars.productservice.repository.impl;
 
 import com.ars.productservice.dto.request.attribute.SearchAttributeRequest;
-import com.ars.productservice.dto.response.attribute.AttributeResponseDTO;
+import com.ars.productservice.dto.response.attribute.AttributeDTO;
 import com.ars.productservice.repository.AttributeRepositoryCustom;
 import com.dct.config.common.SqlUtils;
 import jakarta.persistence.EntityManager;
@@ -20,7 +20,7 @@ public class AttributeRepositoryImpl implements AttributeRepositoryCustom {
     }
 
     @Override
-    public Page<AttributeResponseDTO> getAllWithPaging(SearchAttributeRequest request) {
+    public Page<AttributeDTO> getAllWithPaging(SearchAttributeRequest request) {
         String countSql = "SELECT COUNT(*)";
         String querySql = "SELECT a.id, a.shop_id as shopId, a.name, a.created_by as createdBy, a.created_date as createdDate";
         StringBuilder whereConditions = new StringBuilder(" FROM attribute a WHERE 1=1");

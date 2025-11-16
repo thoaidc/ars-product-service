@@ -207,4 +207,5 @@ Desktop.ini
 dist/
 /mnt/logs/
 /opt/logs/
+/opt/uploads/
 /.idea/

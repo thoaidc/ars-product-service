@@ -2,7 +2,7 @@ package com.ars.productservice.service.impl;
 
 import com.ars.productservice.dto.request.attribute.SaveAttributeRequest;
 import com.ars.productservice.dto.request.attribute.SearchAttributeRequest;
-import com.ars.productservice.dto.response.attribute.AttributeResponseDTO;
+import com.ars.productservice.dto.response.attribute.AttributeDTO;
 import com.ars.productservice.entity.Attribute;
 import com.ars.productservice.repository.AttributeRepository;
 import com.ars.productservice.service.AttributeService;
@@ -27,7 +27,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public BaseResponseDTO getAllWithPaging(SearchAttributeRequest requestDTO) {
-        Page<AttributeResponseDTO> attributePage = attributeRepository.getAllWithPaging(requestDTO);
+        Page<AttributeDTO> attributePage = attributeRepository.getAllWithPaging(requestDTO);
         return BaseResponseDTO.builder().total(attributePage.getTotalElements()).ok(attributePage.getContent());
     }
 

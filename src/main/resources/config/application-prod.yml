@@ -181,4 +181,4 @@ app:
       patterns:
         - /uploads/
       locations:
-        - opt/uploads/products/
+        - /opt/uploads/products/

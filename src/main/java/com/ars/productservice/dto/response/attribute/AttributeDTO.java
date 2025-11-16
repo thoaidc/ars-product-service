@@ -4,13 +4,13 @@ import com.dct.model.dto.response.AuditingDTO;
 
 import java.time.Instant;
 
-public class AttributeResponseDTO extends AuditingDTO {
+public class AttributeDTO extends AuditingDTO {
     private Integer shopId;
     private String name;
 
-    public AttributeResponseDTO() {}
+    public AttributeDTO() {}
 
-    public AttributeResponseDTO(Integer id, Integer shopId, String name, String createdBy, Instant createdDate) {
+    public AttributeDTO(Integer id, Integer shopId, String name, String createdBy, Instant createdDate) {
         super(id, createdBy, createdDate);
         this.shopId = shopId;
         this.name = name;

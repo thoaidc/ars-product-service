@@ -1,5 +1,10 @@
 package com.ars.productservice.dto.request.product;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -8,27 +13,49 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class CreateProductRequest {
+    @NotNull
     private Integer shopId;
+
+    @NotBlank
+    @Size(max = 255)
     private String name;
+
+    @NotBlank
+    @Size(max = 50)
     private String code;
+
+    @NotNull
+    @DecimalMin("0.0")
     private BigDecimal price;
+
+    @Size(max = 1000)
     private String description;
     private boolean customizable;
+
+    @Size(max = 500)
     private String keyword;
+
     private MultipartFile thumbnail;
     private MultipartFile originalImage;
-    private List<Integer> categoryIds = new ArrayList<>();
-    private List<Integer> productGroupIds = new ArrayList<>();
-    private List<VariantRequest> variants = new ArrayList<>();
-    private List<OptionRequest> options = new ArrayList<>();
+    private List<@NotNull Integer> categoryIds = new ArrayList<>();
+    private List<@NotNull Integer> productGroupIds = new ArrayList<>();
+    private List<@Valid VariantRequest> variants = new ArrayList<>();
+    private List<@Valid OptionRequest> options = new ArrayList<>();
 
     public static class VariantRequest {
         private MultipartFile thumbnail;
         private MultipartFile originalImage;
+        @NotBlank
+        @Size(max = 255)
         private String name;
+
+        @NotNull
+        @DecimalMin("0.0")
         private BigDecimal price;
+
+        @NotNull
         private Integer attributeId;
-        private List<Integer> productOptionIds = new ArrayList<>();
+        private List<@NotNull Integer> productOptionIds = new ArrayList<>();
 
         public MultipartFile getThumbnail() {
             return thumbnail;
@@ -36,6 +63,14 @@ public class CreateProductRequest {
 
         public void setThumbnail(MultipartFile thumbnail) {
             this.thumbnail = thumbnail;
+        }
+
+        public MultipartFile getOriginalImage() {
+            return originalImage;
+        }
+
+        public void setOriginalImage(MultipartFile originalImage) {
+            this.originalImage = originalImage;
         }
 
         public String getName() {
@@ -73,15 +108,24 @@ public class CreateProductRequest {
 
     public static class OptionRequest {
         private Integer id;
+        @NotBlank
+        @Size(max = 100)
         private String name;
+
+        @NotBlank
+        @Size(max = 50)
         private String type;
         private Float topPercentage;
         private Float leftPercentage;
         private Float widthPercentage;
         private Float heightPercentage;
+        @Size(max = 1000)
         private String description;
+
+        @Size(max = 2000)
         private String data;
-        private List<OptionAttribute> attributes = new ArrayList<>();
+
+        private List<@Valid OptionAttribute> attributes = new ArrayList<>();
 
         public Integer getId() {
             return id;
@@ -165,6 +209,7 @@ public class CreateProductRequest {
 
         public static class OptionAttribute {
             private MultipartFile image;
+            @Size(max = 255)
             private String text;
 
             public MultipartFile getImage() {
@@ -247,6 +292,14 @@ public class CreateProductRequest {
 
     public void setThumbnail(MultipartFile thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public MultipartFile getOriginalImage() {
+        return originalImage;
+    }
+
+    public void setOriginalImage(MultipartFile originalImage) {
+        this.originalImage = originalImage;
     }
 
     public List<Integer> getCategoryIds() {
