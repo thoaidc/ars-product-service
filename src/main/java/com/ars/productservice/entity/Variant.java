@@ -1,6 +1,7 @@
 package com.ars.productservice.entity;
 
 import com.dct.config.entity.AbstractAuditingEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -29,9 +30,28 @@ public class Variant extends AbstractAuditingEntity {
     @Column(name = "original_image")
     private String originalImage;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id", referencedColumnName = "id")
-    private List<VariantOption> variantOptions;
+    @ManyToMany(
+        cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH },
+        fetch = FetchType.LAZY
+    )
+    @JoinTable(
+        name = "variant_option",
+        joinColumns = @JoinColumn(name = "variant_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "product_option_id", referencedColumnName = "id")
+    )
+    private List<ProductOption> productOptions;
+
+    @Transient
+    @JsonIgnore
+    private List<Integer> productOptionIds;  // Not mapping to DB column, just to reference request mapping
+
+    public List<Integer> getProductOptionIds() {
+        return productOptionIds;
+    }
+
+    public void setProductOptionIds(List<Integer> productOptionIds) {
+        this.productOptionIds = productOptionIds;
+    }
 
     public Integer getProductId() {
         return productId;
@@ -81,11 +101,11 @@ public class Variant extends AbstractAuditingEntity {
         this.originalImage = originalImage;
     }
 
-    public List<VariantOption> getVariantOptions() {
-        return variantOptions;
+    public List<ProductOption> getProductOptions() {
+        return productOptions;
     }
 
-    public void setVariantOptions(List<VariantOption> variantOptions) {
-        this.variantOptions = variantOptions;
+    public void setProductOptions(List<ProductOption> productOptions) {
+        this.productOptions = productOptions;
     }
 }

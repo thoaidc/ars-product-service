@@ -1,6 +1,7 @@
 package com.ars.productservice.entity;
 
 import com.dct.config.entity.AbstractAuditingEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -33,11 +34,20 @@ public class ProductOption extends AbstractAuditingEntity {
     @Column
     private String description;
 
-    @Column(length = 2000)
-    private String data;
-
     @OneToMany(mappedBy = "productOption", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductOptionAttribute> attributes;
+
+    @Transient
+    @JsonIgnore
+    private Integer refId; // Not mapping to DB column, just to reference request mapping
+
+    public Integer getRefId() {
+        return refId;
+    }
+
+    public void setRefId(Integer refId) {
+        this.refId = refId;
+    }
 
     public Integer getProductId() {
         return productId;
@@ -101,14 +111,6 @@ public class ProductOption extends AbstractAuditingEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
     }
 
     public List<ProductOptionAttribute> getAttributes() {

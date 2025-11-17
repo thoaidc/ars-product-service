@@ -122,9 +122,6 @@ public class CreateProductRequest {
         @Size(max = 1000)
         private String description;
 
-        @Size(max = 2000)
-        private String data;
-
         private List<@Valid OptionAttribute> attributes = new ArrayList<>();
 
         public Integer getId() {
@@ -189,14 +186,6 @@ public class CreateProductRequest {
 
         public void setDescription(String description) {
             this.description = description;
-        }
-
-        public String getData() {
-            return data;
-        }
-
-        public void setData(String data) {
-            this.data = data;
         }
 
         public List<OptionAttribute> getAttributes() {

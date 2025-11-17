@@ -12,10 +12,13 @@ import com.ars.productservice.entity.Product;
 import com.ars.productservice.entity.ProductGroup;
 import com.ars.productservice.entity.ProductOption;
 import com.ars.productservice.entity.ProductOptionAttribute;
+import com.ars.productservice.entity.Variant;
+import com.ars.productservice.entity.VariantOption;
 import com.ars.productservice.repository.CategoryRepository;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.repository.ProductOptionRepository;
 import com.ars.productservice.repository.ProductRepository;
+import com.ars.productservice.repository.VariantOptionRepository;
 import com.ars.productservice.repository.VariantRepository;
 import com.ars.productservice.service.ProductService;
 import com.dct.config.common.FileUtils;
@@ -25,6 +28,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,12 +44,13 @@ public class ProductServiceImpl implements ProductService {
     private final VariantRepository variantRepository;
     private final ProductOptionRepository productOptionRepository;
     private final FileUtils fileUtils = new FileUtils();
+    private final VariantOptionRepository variantOptionRepository;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
                               ProductGroupRepository productGroupRepository,
                               VariantRepository variantRepository,
-                              ProductOptionRepository productOptionRepository) {
+                              ProductOptionRepository productOptionRepository, VariantOptionRepository variantOptionRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productGroupRepository = productGroupRepository;
@@ -52,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
         this.productOptionRepository = productOptionRepository;
         this.fileUtils.setPrefixPath(ProductConstants.Upload.prefix);
         this.fileUtils.setUploadDirectory(ProductConstants.Upload.location);
+        this.variantOptionRepository = variantOptionRepository;
     }
 
     @Override
@@ -110,21 +117,57 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product productSave = productRepository.save(product);
-        // Map options
+        Map<Integer, Integer> productOptionIdMap = new HashMap<>();
+
+        // Map product options
         if (!request.getOptions().isEmpty()) {
-            List<ProductOption> options = request.getOptions().stream()
+            List<ProductOption> productOptions = request.getOptions().stream()
                     .map(option -> mapOptionRequest(option, productSave))
                     .toList();
-            productOptionRepository.saveAll(options);
-            productSave.setOptions(options);
+            productOptionRepository.saveAll(productOptions);
+            productSave.setOptions(productOptions);
+            productOptions.forEach(productOption ->
+                productOptionIdMap.put(productOption.getRefId(), productOption.getId())
+            );
+        }
+
+        // Map variants
+        if (!request.getVariants().isEmpty()) {
+            List<Variant> variants = request.getVariants().stream()
+                    .map(variantRequest -> mapVariantRequest(variantRequest, productSave))
+                    .toList();
+            variantRepository.saveAll(variants);
+            List<VariantOption> variantOptions = new ArrayList<>();
+            variants.forEach(variant -> {
+                variant.getProductOptionIds().forEach(productOptionId -> {
+                    VariantOption variantOption = new VariantOption();
+                    variantOption.setVariantId(variant.getId());
+                    variantOption.setProductOptionId(productOptionIdMap.get(productOptionId));
+                    variantOptions.add(variantOption);
+                });
+            });
+            variantOptionRepository.saveAll(variantOptions);
         }
 
         return BaseResponseDTO.builder().ok(productSave);
     }
 
+    private Variant mapVariantRequest(CreateProductRequest.VariantRequest variantRequest, Product product) {
+        Variant variant = new Variant();
+        variant.setAttributeId(variantRequest.getAttributeId());
+        variant.setProductId(product.getId());
+        variant.setName(variantRequest.getName());
+        variant.setPrice(variantRequest.getPrice());
+        variant.setThumbnailUrl(fileUtils.autoCompressImageAndSave(variantRequest.getThumbnail()));
+        variant.setOriginalImage(fileUtils.save(variantRequest.getOriginalImage()));
+        variant.setProductOptionIds(variantRequest.getProductOptionIds());
+        return variant;
+    }
+
     private ProductOption mapOptionRequest(CreateProductRequest.OptionRequest optionRequest, Product product) {
         ProductOption option = new ProductOption();
         option.setProductId(product.getId());
+        option.setRefId(optionRequest.getId());
         option.setName(optionRequest.getName());
         option.setType(optionRequest.getType());
         option.setTopPercentage(optionRequest.getTopPercentage());
@@ -132,7 +175,6 @@ public class ProductServiceImpl implements ProductService {
         option.setWidthPercentage(optionRequest.getWidthPercentage());
         option.setHeightPercentage(optionRequest.getHeightPercentage());
         option.setDescription(optionRequest.getDescription());
-        option.setData(optionRequest.getData());
 
         if (!optionRequest.getAttributes().isEmpty()) {
             List<ProductOptionAttribute> attrs = optionRequest.getAttributes().stream()
