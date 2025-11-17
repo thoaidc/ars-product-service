@@ -1,6 +1,6 @@
 package com.ars.productservice.dto.response.product;
 
-import com.ars.productservice.dto.response.attribute.AttributeDTO;
+import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.dct.model.dto.response.AuditingDTO;
 
 import java.math.BigDecimal;
@@ -19,9 +19,9 @@ public class ProductDTO extends AuditingDTO {
     private String thumbnailUrl;
     private String originalImage;
     private List<VariantDTO> variants = new ArrayList<>();
-    private List<Integer> categoryIds = new ArrayList<>();
-    private List<Integer> groupIds = new ArrayList<>();
-    private List<AttributeDTO> attributes = new ArrayList<>();
+    private List<CategoryDTO> categories = new ArrayList<>();
+    private List<ProductGroupDTO> productGroups = new ArrayList<>();
+    private List<ProductOptionDTO> productOptions = new ArrayList<>();
 
     public ProductDTO() {}
 
@@ -131,27 +131,27 @@ public class ProductDTO extends AuditingDTO {
         this.variants = variants;
     }
 
-    public List<Integer> getCategoryIds() {
-        return categoryIds;
+    public List<ProductOptionDTO> getProductOptions() {
+        return productOptions;
     }
 
-    public void setCategoryIds(List<Integer> categoryIds) {
-        this.categoryIds = categoryIds;
+    public void setProductOptions(List<ProductOptionDTO> productOptions) {
+        this.productOptions = productOptions;
     }
 
-    public List<Integer> getGroupIds() {
-        return groupIds;
+    public List<CategoryDTO> getCategories() {
+        return categories;
     }
 
-    public void setGroupIds(List<Integer> groupIds) {
-        this.groupIds = groupIds;
+    public void setCategories(List<CategoryDTO> categories) {
+        this.categories = categories;
     }
 
-    public List<AttributeDTO> getAttributes() {
-        return attributes;
+    public List<ProductGroupDTO> getProductGroups() {
+        return productGroups;
     }
 
-    public void setAttributes(List<AttributeDTO> attributes) {
-        this.attributes = attributes;
+    public void setProductGroups(List<ProductGroupDTO> productGroups) {
+        this.productGroups = productGroups;
     }
 }

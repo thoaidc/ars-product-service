@@ -1,6 +1,6 @@
 package com.ars.productservice.repository.impl;
 
-import com.ars.productservice.dto.response.category.CategoryResponseDTO;
+import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.ars.productservice.repository.CategoryRepositoryCustom;
 import com.dct.config.common.SqlUtils;
 import com.dct.model.dto.request.BaseRequestDTO;
@@ -21,7 +21,7 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     }
 
     @Override
-    public Page<CategoryResponseDTO> getAllWithPaging(BaseRequestDTO requestDTO) {
+    public Page<CategoryDTO> getAllWithPaging(BaseRequestDTO requestDTO) {
         String countSql = "SELECT COUNT(*)";
         String querySql = "SELECT c.id, c.name, c.code, c.description, c.created_by as createdBy, c.created_date as createdDate";
         StringBuilder whereConditions = new StringBuilder(" FROM category c WHERE 1=1");

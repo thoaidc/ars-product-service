@@ -1,19 +1,30 @@
-package com.ars.productservice.dto.response.product;
+package com.ars.productservice.dto.response.category;
 
 import com.dct.model.dto.response.AuditingDTO;
 
-public class ProductGroupResponseDTO extends AuditingDTO {
-    private Integer shopId;
+import java.time.Instant;
+
+public class CategoryDTO extends AuditingDTO {
     private String name;
     private String code;
     private String description;
 
-    public Integer getShopId() {
-        return shopId;
-    }
+    public CategoryDTO() {}
 
-    public void setShopId(Integer shopId) {
-        this.shopId = shopId;
+    public CategoryDTO(
+        Integer id,
+        String name,
+        String code,
+        String description,
+        String createdBy,
+        Instant createdDate
+    ) {
+        this.name = name;
+        this.code = code;
+        this.description = description;
+        setId(id);
+        setCreatedBy(createdBy);
+        setCreatedDate(createdDate);
     }
 
     public String getName() {

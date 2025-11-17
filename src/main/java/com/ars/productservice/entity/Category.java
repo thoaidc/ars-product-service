@@ -1,6 +1,6 @@
 package com.ars.productservice.entity;
 
-import com.ars.productservice.dto.response.category.CategoryResponseDTO;
+import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.*;
 
@@ -14,7 +14,7 @@ import java.time.Instant;
             name = "categoryGetWithPaging",
             classes = {
                 @ConstructorResult(
-                    targetClass = CategoryResponseDTO.class,
+                    targetClass = CategoryDTO.class,
                     columns = {
                         @ColumnResult(name = "id", type = Integer.class),
                         @ColumnResult(name = "name", type = String.class),

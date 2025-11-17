@@ -1,14 +1,39 @@
 package com.ars.productservice.entity;
 
+import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
 @Table(name = "variant")
+@SqlResultSetMappings(
+    {
+        @SqlResultSetMapping(
+            name = "categoryGetWithPaging",
+            classes = {
+                @ConstructorResult(
+                    targetClass = CategoryDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Integer.class),
+                        @ColumnResult(name = "productId", type = Integer.class),
+                        @ColumnResult(name = "attributeId", type = Integer.class),
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "price", type = BigDecimal.class),
+                        @ColumnResult(name = "thumbnailUrl", type = String.class),
+                        @ColumnResult(name = "originalImage", type = String.class),
+                        @ColumnResult(name = "createdBy", type = String.class),
+                        @ColumnResult(name = "createdDate", type = Instant.class)
+                    }
+                )
+            }
+        )
+    }
+)
 @SuppressWarnings("unused")
 public class Variant extends AbstractAuditingEntity {
 

@@ -1,7 +1,7 @@
 package com.ars.productservice.repository.impl;
 
 import com.ars.productservice.dto.request.product.SearchProductGroupRequest;
-import com.ars.productservice.dto.response.product.ProductGroupResponseDTO;
+import com.ars.productservice.dto.response.product.ProductGroupDTO;
 import com.ars.productservice.repository.ProductGroupRepositoryCustom;
 import com.dct.config.common.SqlUtils;
 import jakarta.persistence.EntityManager;
@@ -20,7 +20,7 @@ public class ProductGroupRepositoryImpl implements ProductGroupRepositoryCustom 
     }
 
     @Override
-    public Page<ProductGroupResponseDTO> getAllWithPaging(SearchProductGroupRequest requestDTO) {
+    public Page<ProductGroupDTO> getAllWithPaging(SearchProductGroupRequest requestDTO) {
         String countSql = "SELECT COUNT(*)";
         String querySql = "SELECT pg.id, pg.shop_id as shopId, pg.name, pg.code, pg.description, " +
                 "pg.created_by as createdBy, pg.created_date as createdDate";

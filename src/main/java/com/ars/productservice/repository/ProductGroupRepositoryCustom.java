@@ -1,9 +1,9 @@
 package com.ars.productservice.repository;
 
 import com.ars.productservice.dto.request.product.SearchProductGroupRequest;
-import com.ars.productservice.dto.response.product.ProductGroupResponseDTO;
+import com.ars.productservice.dto.response.product.ProductGroupDTO;
 import org.springframework.data.domain.Page;
 
 public interface ProductGroupRepositoryCustom {
-    Page<ProductGroupResponseDTO> getAllWithPaging(SearchProductGroupRequest requestDTO);
+    Page<ProductGroupDTO> getAllWithPaging(SearchProductGroupRequest requestDTO);
 }

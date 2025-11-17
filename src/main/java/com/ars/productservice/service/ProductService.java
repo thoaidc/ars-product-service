@@ -7,6 +7,7 @@ import com.dct.model.dto.response.BaseResponseDTO;
 
 public interface ProductService {
     BaseResponseDTO getAllWithPaging(SearchProductRequest request);
+    BaseResponseDTO getDetail(Integer productId);
     BaseResponseDTO create(CreateProductRequest request);
     BaseResponseDTO update(UpdateProductRequest request);
     BaseResponseDTO delete(Integer productId);

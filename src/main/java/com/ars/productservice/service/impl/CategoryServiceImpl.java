@@ -1,7 +1,7 @@
 package com.ars.productservice.service.impl;
 
 import com.ars.productservice.dto.request.category.SaveCategoryRequest;
-import com.ars.productservice.dto.response.category.CategoryResponseDTO;
+import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.ars.productservice.entity.Category;
 import com.ars.productservice.repository.CategoryRepository;
 import com.ars.productservice.service.CategoryService;
@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public BaseResponseDTO getAllWithPaging(BaseRequestDTO requestDTO) {
-        Page<CategoryResponseDTO> categoryPage = categoryRepository.getAllWithPaging(requestDTO);
+        Page<CategoryDTO> categoryPage = categoryRepository.getAllWithPaging(requestDTO);
         return BaseResponseDTO.builder().total(categoryPage.getTotalElements()).ok(categoryPage.getContent());
     }
 

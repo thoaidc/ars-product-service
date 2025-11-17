@@ -2,7 +2,7 @@ package com.ars.productservice.service.impl;
 
 import com.ars.productservice.dto.request.product.SaveProductGroupRequest;
 import com.ars.productservice.dto.request.product.SearchProductGroupRequest;
-import com.ars.productservice.dto.response.product.ProductGroupResponseDTO;
+import com.ars.productservice.dto.response.product.ProductGroupDTO;
 import com.ars.productservice.entity.ProductGroup;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.service.ProductGroupService;
@@ -27,7 +27,7 @@ public class ProductGroupServiceImpl implements ProductGroupService {
 
     @Override
     public BaseResponseDTO getAllWithPaging(SearchProductGroupRequest requestDTO) {
-        Page<ProductGroupResponseDTO> productGroupPage = productGroupRepository.getAllWithPaging(requestDTO);
+        Page<ProductGroupDTO> productGroupPage = productGroupRepository.getAllWithPaging(requestDTO);
         return BaseResponseDTO.builder().total(productGroupPage.getTotalElements()).ok(productGroupPage.getContent());
     }
 

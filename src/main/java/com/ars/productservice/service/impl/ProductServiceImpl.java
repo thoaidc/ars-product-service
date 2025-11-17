@@ -1,12 +1,14 @@
 package com.ars.productservice.service.impl;
 
 import com.ars.productservice.constants.ProductConstants;
-import com.ars.productservice.dto.mapping.ProductCategoryIdPair;
-import com.ars.productservice.dto.mapping.ProductProductGroupIdPair;
 import com.ars.productservice.dto.request.product.CreateProductRequest;
 import com.ars.productservice.dto.request.product.SearchProductRequest;
 import com.ars.productservice.dto.request.product.UpdateProductRequest;
+import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.ars.productservice.dto.response.product.ProductDTO;
+import com.ars.productservice.dto.response.product.ProductGroupDTO;
+import com.ars.productservice.dto.response.product.ProductOptionDTO;
+import com.ars.productservice.dto.response.product.VariantDTO;
 import com.ars.productservice.entity.Category;
 import com.ars.productservice.entity.Product;
 import com.ars.productservice.entity.ProductGroup;
@@ -32,8 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -65,28 +66,46 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public BaseResponseDTO getAllWithPaging(SearchProductRequest request) {
         Page<ProductDTO> productPage = productRepository.getAllWithPaging(request);
-        Set<Integer> productIds = productPage.stream().map(ProductDTO::getId).collect(Collectors.toSet());
-        List<ProductCategoryIdPair> productCategoryIdPairs = categoryRepository.findIdsByProductId(productIds);
-        List<ProductProductGroupIdPair> productProductGroupIdPairs = productGroupRepository.findIdsByProductId(productIds);
-        Map<Integer, List<Integer>> productCategoryIdMap = productCategoryIdPairs.stream()
-                .collect(Collectors.groupingBy(
-                    ProductCategoryIdPair::getProductId,
-                    Collectors.mapping(ProductCategoryIdPair::getCategoryId, Collectors.toList())
-                ));
+        return BaseResponseDTO.builder().total(productPage.getTotalElements()).ok(productPage.getContent());
+    }
 
-        Map<Integer, List<Integer>> productProductGroupIdMap = productProductGroupIdPairs.stream()
-                .collect(Collectors.groupingBy(
-                    ProductProductGroupIdPair::getProductId,
-                    Collectors.mapping(ProductProductGroupIdPair::getProductGroupId, Collectors.toList())
-                ));
+    @Override
+    @Transactional(readOnly = true)
+    public BaseResponseDTO getDetail(Integer productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
 
-        List<ProductDTO> productResponses = productPage.getContent();
-        productResponses.forEach(productDTO -> {
-            productDTO.setCategoryIds(productCategoryIdMap.get(productDTO.getId()));
-            productDTO.setGroupIds(productProductGroupIdMap.get(productDTO.getId()));
-        });
+        if (productOptional.isEmpty()) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Product not exists");
+        }
 
-        return BaseResponseDTO.builder().total(productPage.getTotalElements()).ok(productResponses);
+        Product product = productOptional.get();
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setCode(product.getCode());
+        List<VariantDTO> variantDTOS = variantRepository.findAllByProductId(productId);
+
+        List<ProductOptionDTO> productOptionDTOS = product.getOptions().stream().map(productOption -> {
+            ProductOptionDTO productOptionDTO = new ProductOptionDTO();
+            productOptionDTO.setName(productOption.getName());
+            return productOptionDTO;
+        }).toList();
+
+        List<CategoryDTO> categoryDTOS = product.getCategories().stream().map(category -> {
+            CategoryDTO categoryDTO = new CategoryDTO();
+            categoryDTO.setName(category.getName());
+            return categoryDTO;
+        }).toList();
+
+        List<ProductGroupDTO> productGroupDTOS = product.getProductGroups().stream().map(productGroup -> {
+            ProductGroupDTO productGroupDTO = new ProductGroupDTO();
+            productGroupDTO.setName(productGroup.getName());
+            return productGroupDTO;
+        }).toList();
+
+        productDTO.setCategories(categoryDTOS);
+        productDTO.setProductGroups(productGroupDTOS);
+        productDTO.setProductOptions(productOptionDTOS);
+        productDTO.setVariants(variantDTOS);
+        return BaseResponseDTO.builder().ok(productDTO);
     }
 
     @Override
@@ -138,14 +157,14 @@ public class ProductServiceImpl implements ProductService {
                     .toList();
             variantRepository.saveAll(variants);
             List<VariantOption> variantOptions = new ArrayList<>();
-            variants.forEach(variant -> {
+            variants.forEach(variant ->
                 variant.getProductOptionIds().forEach(productOptionId -> {
                     VariantOption variantOption = new VariantOption();
                     variantOption.setVariantId(variant.getId());
                     variantOption.setProductOptionId(productOptionIdMap.get(productOptionId));
                     variantOptions.add(variantOption);
-                });
-            });
+                })
+            );
             variantOptionRepository.saveAll(variantOptions);
         }
 
