@@ -32,6 +32,11 @@ public class ProductResource {
         return productService.getAllWithPaging(request);
     }
 
+    @GetMapping("/p/v1/products/{productId}")
+    public BaseResponseDTO getAllWithPaging(@PathVariable Integer productId) {
+        return productService.getDetail(productId);
+    }
+
     @PostMapping("/v1/products")
     public BaseResponseDTO createProduct(@Valid @ModelAttribute CreateProductRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

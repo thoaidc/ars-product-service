@@ -8,7 +8,7 @@ public interface ProductConstants {
     }
 
     interface Upload {
-        String prefix = "/uploads/products/";
-        String location = "opt/uploads/products/";
+        String PREFIX = "/uploads/products/";
+        String LOCATION = "opt/uploads/products/";
     }
 }

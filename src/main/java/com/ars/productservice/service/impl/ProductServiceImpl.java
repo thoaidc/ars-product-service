@@ -23,9 +23,12 @@ import com.ars.productservice.repository.ProductRepository;
 import com.ars.productservice.repository.VariantOptionRepository;
 import com.ars.productservice.repository.VariantRepository;
 import com.ars.productservice.service.ProductService;
+
 import com.dct.config.common.FileUtils;
 import com.dct.model.dto.response.BaseResponseDTO;
 import com.dct.model.exception.BaseBadRequestException;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,15 +54,16 @@ public class ProductServiceImpl implements ProductService {
                               CategoryRepository categoryRepository,
                               ProductGroupRepository productGroupRepository,
                               VariantRepository variantRepository,
-                              ProductOptionRepository productOptionRepository, VariantOptionRepository variantOptionRepository) {
+                              ProductOptionRepository productOptionRepository,
+                              VariantOptionRepository variantOptionRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productGroupRepository = productGroupRepository;
         this.variantRepository = variantRepository;
         this.productOptionRepository = productOptionRepository;
-        this.fileUtils.setPrefixPath(ProductConstants.Upload.prefix);
-        this.fileUtils.setUploadDirectory(ProductConstants.Upload.location);
         this.variantOptionRepository = variantOptionRepository;
+        this.fileUtils.setPrefixPath(ProductConstants.Upload.PREFIX);
+        this.fileUtils.setUploadDirectory(ProductConstants.Upload.LOCATION);
     }
 
     @Override
@@ -80,24 +84,37 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productOptional.get();
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setCode(product.getCode());
-        List<VariantDTO> variantDTOS = variantRepository.findAllByProductId(productId);
+        BeanUtils.copyProperties(product, productDTO, "productOptions", "categories", "productGroups");
+        List<Variant> variants = variantRepository.findAllByProductId(productId);
+
+        List<VariantDTO> variantDTOS = variants.stream().map(variant -> {
+            VariantDTO variantDTO = new VariantDTO();
+            BeanUtils.copyProperties(variant, variantDTO, "productOptions");
+            List<ProductOptionDTO> productOptionDTOS = variant.getProductOptions().stream()
+                .map(productOption -> {
+                    ProductOptionDTO productOptionDTO = new ProductOptionDTO();
+                    BeanUtils.copyProperties(productOption, productOptionDTO, "attributes");
+                    return productOptionDTO;
+                }).toList();
+            variantDTO.setProductOptions(productOptionDTOS);
+            return variantDTO;
+        }).toList();
 
         List<ProductOptionDTO> productOptionDTOS = product.getOptions().stream().map(productOption -> {
             ProductOptionDTO productOptionDTO = new ProductOptionDTO();
-            productOptionDTO.setName(productOption.getName());
+            BeanUtils.copyProperties(productOption, productOptionDTO, "attributes");
             return productOptionDTO;
         }).toList();
 
         List<CategoryDTO> categoryDTOS = product.getCategories().stream().map(category -> {
             CategoryDTO categoryDTO = new CategoryDTO();
-            categoryDTO.setName(category.getName());
+            BeanUtils.copyProperties(category, categoryDTO);
             return categoryDTO;
         }).toList();
 
         List<ProductGroupDTO> productGroupDTOS = product.getProductGroups().stream().map(productGroup -> {
             ProductGroupDTO productGroupDTO = new ProductGroupDTO();
-            productGroupDTO.setName(productGroup.getName());
+            BeanUtils.copyProperties(productGroup, productGroupDTO);
             return productGroupDTO;
         }).toList();
 

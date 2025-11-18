@@ -1,6 +1,6 @@
 package com.ars.productservice.entity;
 
-import com.ars.productservice.dto.response.category.CategoryDTO;
+import com.ars.productservice.dto.response.product.ProductOptionDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -13,10 +13,10 @@ import java.util.List;
 @SqlResultSetMappings(
     {
         @SqlResultSetMapping(
-            name = "categoryGetWithPaging",
+            name = "productOptionGetWithPaging",
             classes = {
                 @ConstructorResult(
-                    targetClass = CategoryDTO.class,
+                    targetClass = ProductOptionDTO.class,
                     columns = {
                         @ColumnResult(name = "id", type = Integer.class),
                         @ColumnResult(name = "productId", type = Integer.class),
