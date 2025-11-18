@@ -38,8 +38,8 @@ public class UpdateProductRequest {
     private MultipartFile originalImage;
     private List<@NotNull Integer> categoryIds = new ArrayList<>();
     private List<@NotNull Integer> productGroupIds = new ArrayList<>();
-    private List<@Valid VariantRequest> variants = new ArrayList<>();
-    private List<@Valid OptionRequest> options = new ArrayList<>();
+//    private List<@Valid VariantRequest> variants = new ArrayList<>();
+//    private List<@Valid OptionRequest> options = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -129,21 +129,21 @@ public class UpdateProductRequest {
         this.productGroupIds = productGroupIds;
     }
 
-    public List<VariantRequest> getVariants() {
-        return variants;
-    }
-
-    public void setVariants(List<VariantRequest> variants) {
-        this.variants = variants;
-    }
-
-    public List<OptionRequest> getOptions() {
-        return options;
-    }
-
-    public void setOptions(List<OptionRequest> options) {
-        this.options = options;
-    }
+//    public List<VariantRequest> getVariants() {
+//        return variants;
+//    }
+//
+//    public void setVariants(List<VariantRequest> variants) {
+//        this.variants = variants;
+//    }
+//
+//    public List<OptionRequest> getOptions() {
+//        return options;
+//    }
+//
+//    public void setOptions(List<OptionRequest> options) {
+//        this.options = options;
+//    }
 
     public static class VariantRequest extends CreateProductRequest.VariantRequest {
         @NotNull

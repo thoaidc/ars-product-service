@@ -2,6 +2,7 @@ package com.ars.productservice.entity;
 
 import com.ars.productservice.dto.response.product.ProductDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -80,6 +81,7 @@ public class Product extends AbstractAuditingEntity {
         joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "product_group_id", referencedColumnName = "id")
     )
+    @JsonIgnore
     private List<ProductGroup> productGroups;
 
     @ManyToMany(
@@ -91,10 +93,12 @@ public class Product extends AbstractAuditingEntity {
         joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id")
     )
+    @JsonIgnore
     private List<Category> categories;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName="id")
+    @JsonIgnore
     private List<ProductOption> options;
 
     public Integer getShopId() {

@@ -2,8 +2,10 @@ package com.ars.productservice.resource;
 
 import com.ars.productservice.dto.request.product.CreateProductRequest;
 import com.ars.productservice.dto.request.product.SearchProductRequest;
+import com.ars.productservice.dto.request.product.UpdateProductRequest;
 import com.ars.productservice.service.ProductService;
 import com.dct.model.dto.response.BaseResponseDTO;
+
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,29 +36,42 @@ public class ProductResource {
     }
 
     @GetMapping("/p/v1/products/{productId}")
-    public BaseResponseDTO getAllWithPaging(@PathVariable Integer productId) {
+    public BaseResponseDTO getProductDetail(@PathVariable Integer productId) {
         return productService.getDetail(productId);
     }
 
     @PostMapping("/v1/products")
     public BaseResponseDTO createProduct(@Valid @ModelAttribute CreateProductRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            String errors = bindingResult.getAllErrors()
-                    .stream()
-                    .map(ObjectError::getDefaultMessage)
-                    .collect(Collectors.joining("; "));
-            return BaseResponseDTO.builder()
-                    .code(HttpStatus.BAD_REQUEST.value())
-                    .success(Boolean.FALSE)
-                    .message(errors)
-                    .build();
+            return responseError(bindingResult);
         }
 
         return productService.create(request);
     }
 
+    @PutMapping("/v1/products")
+    public BaseResponseDTO updateProduct(@Valid @ModelAttribute UpdateProductRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return responseError(bindingResult);
+        }
+
+        return productService.update(request);
+    }
+
     @DeleteMapping("/v1/products/{productId}")
-    public BaseResponseDTO delete(@PathVariable Integer productId) {
+    public BaseResponseDTO deleteProduct(@PathVariable Integer productId) {
         return productService.delete(productId);
+    }
+
+    private BaseResponseDTO responseError(BindingResult bindingResult) {
+        String errors = bindingResult.getAllErrors()
+                .stream()
+                .map(ObjectError::getDefaultMessage)
+                .collect(Collectors.joining("; "));
+        return BaseResponseDTO.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .success(Boolean.FALSE)
+                .message(errors)
+                .build();
     }
 }
