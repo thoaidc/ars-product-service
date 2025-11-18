@@ -11,14 +11,18 @@ import com.ars.productservice.dto.response.product.ProductOptionDTO;
 import com.ars.productservice.dto.response.product.VariantDTO;
 import com.ars.productservice.entity.Category;
 import com.ars.productservice.entity.Product;
+import com.ars.productservice.entity.ProductCategory;
 import com.ars.productservice.entity.ProductGroup;
 import com.ars.productservice.entity.ProductOption;
 import com.ars.productservice.entity.ProductOptionAttribute;
+import com.ars.productservice.entity.ProductProductGroup;
 import com.ars.productservice.entity.Variant;
 import com.ars.productservice.entity.VariantOption;
 import com.ars.productservice.repository.CategoryRepository;
+import com.ars.productservice.repository.ProductCategoryRepository;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.repository.ProductOptionRepository;
+import com.ars.productservice.repository.ProductProductGroupRepository;
 import com.ars.productservice.repository.ProductRepository;
 import com.ars.productservice.repository.VariantOptionRepository;
 import com.ars.productservice.repository.VariantRepository;
@@ -32,6 +36,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,19 +54,25 @@ public class ProductServiceImpl implements ProductService {
     private final ProductOptionRepository productOptionRepository;
     private final FileUtils fileUtils = new FileUtils();
     private final VariantOptionRepository variantOptionRepository;
+    private final ProductProductGroupRepository productProductGroupRepository;
+    private final ProductCategoryRepository productCategoryRepository;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
                               ProductGroupRepository productGroupRepository,
                               VariantRepository variantRepository,
                               ProductOptionRepository productOptionRepository,
-                              VariantOptionRepository variantOptionRepository) {
+                              VariantOptionRepository variantOptionRepository,
+                              ProductProductGroupRepository productProductGroupRepository,
+                              ProductCategoryRepository productCategoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productGroupRepository = productGroupRepository;
         this.variantRepository = variantRepository;
         this.productOptionRepository = productOptionRepository;
         this.variantOptionRepository = variantOptionRepository;
+        this.productProductGroupRepository = productProductGroupRepository;
+        this.productCategoryRepository = productCategoryRepository;
         this.fileUtils.setPrefixPath(ProductConstants.Upload.PREFIX);
         this.fileUtils.setUploadDirectory(ProductConstants.Upload.LOCATION);
     }
@@ -230,7 +241,98 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public BaseResponseDTO update(UpdateProductRequest request) {
-        return null;
+        Integer productId = request.getId();
+        Optional<Product> productOptional = productRepository.findById(productId);
+
+        if (productOptional.isEmpty()) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Product not exists");
+        }
+
+        Product product = productOptional.get();
+        BeanUtils.copyProperties(request, product, "originalImage", "thumbnail", "options");
+        String newThumbnailUrl = fileUtils.autoCompressImageAndSave(request.getThumbnail());
+        String newOriginalImageUrl = fileUtils.save(request.getOriginalImage());
+
+        if (StringUtils.hasText(newThumbnailUrl)) {
+            fileUtils.delete(product.getThumbnailUrl());
+            product.setThumbnailUrl(newThumbnailUrl);
+        }
+
+        if (StringUtils.hasText(newOriginalImageUrl)) {
+            fileUtils.delete(product.getOriginalImage());
+            product.setOriginalImage(newOriginalImageUrl);
+        }
+
+        updateProductCategories(request);
+        updateProductProductGroups(request);
+        updateProductOptions(request);
+        updateVariants(request);
+        productRepository.save(product);
+        return BaseResponseDTO.builder().ok(product);
+    }
+
+    private void updateProductCategories(UpdateProductRequest request) {
+        Integer productId = request.getId();
+        List<ProductCategory> oldProductCategories = productCategoryRepository.findAllByProductId(productId);
+        List<Integer> oldCategoryIds = oldProductCategories.stream().map(ProductCategory::getCategoryId).toList();
+        List<ProductCategory> productCategoriesToDelete = new ArrayList<>();
+        List<Integer> categoryIdsUpdated = request.getCategoryIds();
+
+        for (ProductCategory productCategory : oldProductCategories) {
+            if (!categoryIdsUpdated.contains(productCategory.getCategoryId())) {
+                productCategoriesToDelete.add(productCategory);
+            }
+        }
+
+        List<ProductCategory> newProductCategories = categoryIdsUpdated.stream()
+                .filter(categoryId -> !oldCategoryIds.contains(categoryId))
+                .map(categoryId -> {
+                    ProductCategory productProductGroup = new ProductCategory();
+                    productProductGroup.setProductId(productId);
+                    productProductGroup.setCategoryId(categoryId);
+                    return productProductGroup;
+                })
+                .toList();
+
+        productCategoryRepository.saveAll(newProductCategories);
+        productCategoryRepository.deleteAll(productCategoriesToDelete);
+    }
+
+    private void updateProductProductGroups(UpdateProductRequest request) {
+        Integer productId = request.getId();
+        List<ProductProductGroup> oldProductProductGroups = productProductGroupRepository.findAllByProductId(productId);
+        List<Integer> oldProductProductGroupIds = oldProductProductGroups.stream()
+                .map(ProductProductGroup::getProductGroupId)
+                .toList();
+        List<ProductProductGroup> productProductGroupsToDelete = new ArrayList<>();
+        List<Integer> productGroupIdsUpdated = request.getProductGroupIds();
+
+        for (ProductProductGroup productProductGroup : oldProductProductGroups) {
+            if (!productGroupIdsUpdated.contains(productProductGroup.getProductGroupId())) {
+                productProductGroupsToDelete.add(productProductGroup);
+            }
+        }
+
+        List<ProductProductGroup> newProductProductGroups = productGroupIdsUpdated.stream()
+                .filter(productProductGroupId -> !oldProductProductGroupIds.contains(productProductGroupId))
+                .map(productProductGroupId -> {
+                    ProductProductGroup productProductGroup = new ProductProductGroup();
+                    productProductGroup.setProductId(productId);
+                    productProductGroup.setProductGroupId(productProductGroupId);
+                    return productProductGroup;
+                })
+                .toList();
+
+        productProductGroupRepository.saveAll(newProductProductGroups);
+        productProductGroupRepository.deleteAll(productProductGroupsToDelete);
+    }
+
+    private void updateProductOptions(UpdateProductRequest request) {
+
+    }
+
+    private void updateVariants(UpdateProductRequest request) {
+
     }
 
     @Override
