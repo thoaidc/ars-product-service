@@ -4,6 +4,7 @@ import com.ars.productservice.constants.ProductConstants;
 import com.ars.productservice.dto.request.product.CreateProductRequest;
 import com.ars.productservice.dto.request.product.SearchProductRequest;
 import com.ars.productservice.dto.request.product.UpdateProductRequest;
+import com.ars.productservice.dto.request.product.UpdateProductRequest.OptionRequest;
 import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.ars.productservice.dto.response.product.ProductDTO;
 import com.ars.productservice.dto.response.product.ProductGroupDTO;
@@ -42,7 +43,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -113,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductOptionDTO> productOptionDTOS = product.getOptions().stream().map(productOption -> {
             ProductOptionDTO productOptionDTO = new ProductOptionDTO();
-            BeanUtils.copyProperties(productOption, productOptionDTO, "attributes");
+            BeanUtils.copyProperties(productOption, productOptionDTO);
             return productOptionDTO;
         }).toList();
 
@@ -266,7 +269,7 @@ public class ProductServiceImpl implements ProductService {
         updateProductCategories(request);
         updateProductProductGroups(request);
         updateProductOptions(request);
-        updateVariants(request);
+//        updateVariants(request);
         productRepository.save(product);
         return BaseResponseDTO.builder().ok(product);
     }
@@ -328,12 +331,133 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void updateProductOptions(UpdateProductRequest request) {
+        Integer productId = request.getId();
+        List<ProductOption> oldProductOptions = productOptionRepository.findAllByProductId(productId);
+        Map<Integer, ProductOption> oldProductOptionMap = oldProductOptions.stream()
+                .collect(Collectors.toMap(ProductOption::getId, productOption -> productOption));
+        List<UpdateProductRequest.OptionRequest> productOptionsRequest = request.getOptions();
+        List<Integer> newProductOptionIds = productOptionsRequest.stream()
+                .map(UpdateProductRequest.OptionRequest::getId)
+                .filter(Objects::nonNull)
+                .toList();
+        List<ProductOption> productOptionsToSave = new ArrayList<>();
+        List<ProductOption> productOptionsToDelete = oldProductOptions.stream()
+                .filter(oldProductOption -> !newProductOptionIds.contains(oldProductOption.getId()))
+                .toList();
 
+        for (UpdateProductRequest.OptionRequest productOptionRequest : productOptionsRequest) {
+            ProductOption productOption = oldProductOptionMap.get(productOptionRequest.getId());
+
+            if (Objects.isNull(productOption)) {
+                productOption = new ProductOption();
+                productOption.setProductId(productId);
+                productOption.setRefId(productOptionRequest.getId());
+            }
+
+            BeanUtils.copyProperties(productOptionRequest, productOption, "attributes");
+            updateProductOptionAttributes(productOption, productOptionRequest);
+            productOptionsToSave.add(productOption);
+        }
+
+        productOptionRepository.deleteAll(productOptionsToDelete);
+        productOptionRepository.saveAll(productOptionsToSave);
     }
 
-    private void updateVariants(UpdateProductRequest request) {
+    private void updateProductOptionAttributes(ProductOption option, OptionRequest productOptionRequest) {
+        List<ProductOptionAttribute> oldAttrs = option.getAttributes();
+        List<OptionRequest.OptionAttribute> productOptionAttributesRequest = productOptionRequest.getAttributes();
+        List<Integer> newOptionAttributeIds = productOptionAttributesRequest.stream()
+                .map(OptionRequest.OptionAttribute::getId)
+                .filter(Objects::nonNull)
+                .toList();
 
+        oldAttrs.removeIf(attribute -> newOptionAttributeIds.stream()
+            .noneMatch(productOptionAttributeId -> Objects.equals(productOptionAttributeId, attribute.getId()))
+        );
+
+        Map<Integer, ProductOptionAttribute> oldProductOptionAttributeMap = oldAttrs.stream()
+                .collect(Collectors.toMap(ProductOptionAttribute::getId, attribute -> attribute));
+
+        for (OptionRequest.OptionAttribute attributeRequest : productOptionRequest.getAttributes()) {
+            ProductOptionAttribute productOptionAttribute = oldProductOptionAttributeMap.get(attributeRequest.getId());
+
+            if (Objects.isNull(productOptionAttribute)) {
+                productOptionAttribute = new ProductOptionAttribute();
+                productOptionAttribute.setProductOption(option);
+                productOptionAttribute.setProductOptionId(option.getId());
+                oldAttrs.add(productOptionAttribute);
+            }
+
+            productOptionAttribute.setText(attributeRequest.getText());
+            String newImageUrl = fileUtils.autoCompressImageAndSave(attributeRequest.getImage());
+
+            if (StringUtils.hasText(newImageUrl)) {
+                fileUtils.delete(productOptionAttribute.getImage());
+                productOptionAttribute.setImage(newImageUrl);
+            }
+        }
     }
+
+//    private void updateVariants(UpdateProductRequest request) {
+//        Integer productId = request.getId();
+//        List<Variant> oldVariants = variantRepository.findAllByProductId(productId);
+//        Map<Integer, Variant> oldVariantMap = oldVariants.stream()
+//                .collect(Collectors.toMap(Variant::getId, v -> v));
+//        List<UpdateProductRequest.VariantRequest> newVariantReqs = request.getVariants();
+//        List<Integer> newVariantIds = newVariantReqs.stream()
+//                .map(UpdateProductRequest.VariantRequest::getId)
+//                .filter(Objects::nonNull)
+//                .toList();
+//        List<Variant> variantsToDelete = oldVariants.stream()
+//                .filter(v -> !newVariantIds.contains(v.getId()))
+//                .toList();
+//        List<Variant> variantsToSave = new ArrayList<>();
+//
+//        if (!variantsToDelete.isEmpty()) {
+//            variantRepository.deleteAll(variantsToDelete);
+//        }
+//
+//        List<ProductOption> productOptions = productOptionRepository.findAllByProductId(productId);
+//        Map<Integer, Integer> productOptionIdMap = productOptions.stream()
+//                .collect(Collectors.toMap(ProductOption::getRefId, ProductOption::getId));
+//
+//        for (UpdateProductRequest.VariantRequest vr : newVariantReqs) {
+//            Variant variant = null;
+//
+//            if (vr.getId() != null) {
+//                variant = oldVariantMap.get(vr.getId());
+//            }
+//
+//            if (variant == null) {
+//                variant = new Variant();
+//                variant.setProductId(productId);
+//            }
+//
+//            variant.setAttributeId(vr.getAttributeId());
+//            variant.setName(vr.getName());
+//            variant.setPrice(vr.getPrice());
+//            variant.setThumbnailUrl(fileUtils.autoCompressImageAndSave(vr.getThumbnail()));
+//            variant.setOriginalImage(fileUtils.save(vr.getOriginalImage()));
+//            variant.setProductOptionIds(vr.getProductOptionIds());
+//            variantsToSave.add(variant);
+//        }
+//
+//        variantRepository.saveAll(variantsToSave);
+//        List<Integer> variantIds = variantsToSave.stream().map(Variant::getId).toList();
+//        List<VariantOption> variantOptions = new ArrayList<>();
+//        variantOptionRepository.deleteAllById(variantIds);
+//
+//        for (Variant v : variantsToSave) {
+//            for (Integer refOptionId : v.getProductOptionIds()) {
+//                VariantOption vo = new VariantOption();
+//                vo.setVariantId(v.getId());
+//                vo.setProductOptionId(productOptionIdMap.get(refOptionId));
+//                variantOptions.add(vo);
+//            }
+//        }
+//
+//        variantOptionRepository.saveAll(variantOptions);
+//    }
 
     @Override
     @Transactional(rollbackFor = Throwable.class)

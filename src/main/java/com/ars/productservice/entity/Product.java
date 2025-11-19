@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -82,7 +83,7 @@ public class Product extends AbstractAuditingEntity {
         inverseJoinColumns = @JoinColumn(name = "product_group_id", referencedColumnName = "id")
     )
     @JsonIgnore
-    private List<ProductGroup> productGroups;
+    private List<ProductGroup> productGroups = new ArrayList<>();
 
     @ManyToMany(
         cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH },
@@ -94,12 +95,12 @@ public class Product extends AbstractAuditingEntity {
         inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id")
     )
     @JsonIgnore
-    private List<Category> categories;
+    private List<Category> categories = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName="id")
     @JsonIgnore
-    private List<ProductOption> options;
+    private List<ProductOption> options = new ArrayList<>();
 
     public Integer getShopId() {
         return shopId;

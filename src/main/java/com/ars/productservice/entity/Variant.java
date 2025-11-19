@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -64,11 +65,11 @@ public class Variant extends AbstractAuditingEntity {
         joinColumns = @JoinColumn(name = "variant_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "product_option_id", referencedColumnName = "id")
     )
-    private List<ProductOption> productOptions;
+    private List<ProductOption> productOptions = new ArrayList<>();
 
     @Transient
     @JsonIgnore
-    private List<Integer> productOptionIds;  // Not mapping to DB column, just to reference request mapping
+    private List<Integer> productOptionIds = new ArrayList<>();  // Not mapping to DB column, just to reference request mapping
 
     public List<Integer> getProductOptionIds() {
         return productOptionIds;

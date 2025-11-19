@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -62,8 +63,8 @@ public class ProductOption extends AbstractAuditingEntity {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "productOption", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductOptionAttribute> attributes;
+    @OneToMany(mappedBy = "productOption", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<ProductOptionAttribute> attributes = new ArrayList<>();
 
     @Transient
     @JsonIgnore
