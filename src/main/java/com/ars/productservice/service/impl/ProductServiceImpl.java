@@ -268,8 +268,8 @@ public class ProductServiceImpl implements ProductService {
 
         updateProductCategories(request);
         updateProductProductGroups(request);
-        updateProductOptions(request);
-//        updateVariants(request);
+        List<ProductOption> productOptionsUpdated = updateProductOptions(request);
+        updateVariants(request, productOptionsUpdated);
         productRepository.save(product);
         return BaseResponseDTO.builder().ok(product);
     }
@@ -330,7 +330,7 @@ public class ProductServiceImpl implements ProductService {
         productProductGroupRepository.deleteAll(productProductGroupsToDelete);
     }
 
-    private void updateProductOptions(UpdateProductRequest request) {
+    private List<ProductOption> updateProductOptions(UpdateProductRequest request) {
         Integer productId = request.getId();
         List<ProductOption> oldProductOptions = productOptionRepository.findAllByProductId(productId);
         Map<Integer, ProductOption> oldProductOptionMap = oldProductOptions.stream()
@@ -360,7 +360,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         productOptionRepository.deleteAll(productOptionsToDelete);
-        productOptionRepository.saveAll(productOptionsToSave);
+        return productOptionRepository.saveAll(productOptionsToSave);
     }
 
     private void updateProductOptionAttributes(ProductOption option, OptionRequest productOptionRequest) {
@@ -398,66 +398,67 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-//    private void updateVariants(UpdateProductRequest request) {
-//        Integer productId = request.getId();
-//        List<Variant> oldVariants = variantRepository.findAllByProductId(productId);
-//        Map<Integer, Variant> oldVariantMap = oldVariants.stream()
-//                .collect(Collectors.toMap(Variant::getId, v -> v));
-//        List<UpdateProductRequest.VariantRequest> newVariantReqs = request.getVariants();
-//        List<Integer> newVariantIds = newVariantReqs.stream()
-//                .map(UpdateProductRequest.VariantRequest::getId)
-//                .filter(Objects::nonNull)
-//                .toList();
-//        List<Variant> variantsToDelete = oldVariants.stream()
-//                .filter(v -> !newVariantIds.contains(v.getId()))
-//                .toList();
-//        List<Variant> variantsToSave = new ArrayList<>();
-//
-//        if (!variantsToDelete.isEmpty()) {
-//            variantRepository.deleteAll(variantsToDelete);
-//        }
-//
-//        List<ProductOption> productOptions = productOptionRepository.findAllByProductId(productId);
-//        Map<Integer, Integer> productOptionIdMap = productOptions.stream()
-//                .collect(Collectors.toMap(ProductOption::getRefId, ProductOption::getId));
-//
-//        for (UpdateProductRequest.VariantRequest vr : newVariantReqs) {
-//            Variant variant = null;
-//
-//            if (vr.getId() != null) {
-//                variant = oldVariantMap.get(vr.getId());
-//            }
-//
-//            if (variant == null) {
-//                variant = new Variant();
-//                variant.setProductId(productId);
-//            }
-//
-//            variant.setAttributeId(vr.getAttributeId());
-//            variant.setName(vr.getName());
-//            variant.setPrice(vr.getPrice());
-//            variant.setThumbnailUrl(fileUtils.autoCompressImageAndSave(vr.getThumbnail()));
-//            variant.setOriginalImage(fileUtils.save(vr.getOriginalImage()));
-//            variant.setProductOptionIds(vr.getProductOptionIds());
-//            variantsToSave.add(variant);
-//        }
-//
-//        variantRepository.saveAll(variantsToSave);
-//        List<Integer> variantIds = variantsToSave.stream().map(Variant::getId).toList();
-//        List<VariantOption> variantOptions = new ArrayList<>();
-//        variantOptionRepository.deleteAllById(variantIds);
-//
-//        for (Variant v : variantsToSave) {
-//            for (Integer refOptionId : v.getProductOptionIds()) {
-//                VariantOption vo = new VariantOption();
-//                vo.setVariantId(v.getId());
-//                vo.setProductOptionId(productOptionIdMap.get(refOptionId));
-//                variantOptions.add(vo);
-//            }
-//        }
-//
-//        variantOptionRepository.saveAll(variantOptions);
-//    }
+    private void updateVariants(UpdateProductRequest request, List<ProductOption> productOptionsUpdated) {
+        Integer productId = request.getId();
+        List<Variant> oldVariants = variantRepository.findAllByProductId(productId);
+        Map<Integer, Variant> oldVariantMap = oldVariants.stream()
+                .collect(Collectors.toMap(Variant::getId, variant -> variant));
+        List<UpdateProductRequest.VariantRequest> newVariantRequests = request.getVariants();
+        List<Integer> newVariantIds = newVariantRequests.stream()
+                .map(UpdateProductRequest.VariantRequest::getId)
+                .filter(Objects::nonNull)
+                .toList();
+        List<Variant> variantsToSave = new ArrayList<>();
+        List<Variant> variantsToDelete = oldVariants.stream()
+                .filter(variant -> !newVariantIds.contains(variant.getId()))
+                .toList();
+        List<Integer> variantIdsToDelete = variantsToDelete.stream().map(Variant::getId).toList();
+        Map<Integer, Integer> productOptionIdMap = productOptionsUpdated.stream()
+                .collect(Collectors.toMap(ProductOption::getRefId, ProductOption::getId));
+        List<VariantOption> newVariantOptions = new ArrayList<>();
+
+        for (UpdateProductRequest.VariantRequest variantRequest : newVariantRequests) {
+            Variant variant = oldVariantMap.get(variantRequest.getId());
+
+            if (Objects.isNull(variant)) {
+                variant = new Variant();
+                variant.setProductId(productId);
+            }
+
+            variant.setAttributeId(variantRequest.getAttributeId());
+            variant.setName(variantRequest.getName());
+            variant.setPrice(variantRequest.getPrice());
+            String newOriginalImageUrl = fileUtils.save(variantRequest.getOriginalImage());
+            String newThumbnailUrl = fileUtils.autoCompressImageAndSave(variantRequest.getThumbnail());
+
+            if (StringUtils.hasText(newThumbnailUrl)) {
+                fileUtils.delete(variant.getThumbnailUrl());
+                variant.setThumbnailUrl(newThumbnailUrl);
+            }
+
+            if (StringUtils.hasText(newOriginalImageUrl)) {
+                fileUtils.delete(variant.getOriginalImage());
+                variant.setOriginalImage(newOriginalImageUrl);
+            }
+
+            variant.setProductOptionIds(variantRequest.getProductOptionIds());
+            variantsToSave.add(variant);
+        }
+
+        for (Variant variant : variantsToSave) {
+            for (Integer refOptionId : variant.getProductOptionIds()) {
+                VariantOption variantOption = new VariantOption();
+                variantOption.setVariantId(variant.getId());
+                variantOption.setProductOptionId(productOptionIdMap.get(refOptionId));
+                newVariantOptions.add(variantOption);
+            }
+        }
+
+        variantRepository.saveAll(variantsToSave);
+        variantRepository.deleteAll(variantsToDelete);
+        variantOptionRepository.saveAll(newVariantOptions);
+        variantOptionRepository.deleteAllByVariantIdIn(variantIdsToDelete);
+    }
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
