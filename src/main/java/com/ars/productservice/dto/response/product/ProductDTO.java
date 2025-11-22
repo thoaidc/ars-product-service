@@ -2,6 +2,7 @@ package com.ars.productservice.dto.response.product;
 
 import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.dct.model.dto.response.AuditingDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,6 +18,7 @@ public class ProductDTO extends AuditingDTO {
     private Boolean customizable;
     private String status;
     private String thumbnailUrl;
+    @JsonIgnore
     private String originalImage;
     private List<VariantDTO> variants = new ArrayList<>();
     private List<CategoryDTO> categories = new ArrayList<>();

@@ -1,6 +1,7 @@
 package com.ars.productservice.dto.response.product;
 
 import com.dct.model.dto.response.AuditingDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,6 +14,7 @@ public class VariantDTO extends AuditingDTO {
     private String name;
     private BigDecimal price;
     private String thumbnailUrl;
+    @JsonIgnore
     private String originalImage;
     private List<ProductOptionDTO> productOptions = new ArrayList<>();
 
