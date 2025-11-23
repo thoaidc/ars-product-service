@@ -24,12 +24,12 @@ public class ProductGroupRepositoryImpl implements ProductGroupRepositoryCustom 
         String countSql = "SELECT COUNT(*)";
         String querySql = "SELECT pg.id, pg.shop_id as shopId, pg.name, pg.code, pg.description, " +
                 "pg.created_by as createdBy, pg.created_date as createdDate";
-        StringBuilder whereConditions = new StringBuilder(" FROM product_group pg WHERE 1=1");
+        StringBuilder whereConditions = new StringBuilder(" FROM product_group pg " + SqlUtils.WHERE_CLAUSE_REPLACED);
         Map<String, Object> params = new HashMap<>();
         SqlUtils.appendSqlEqualCondition(whereConditions, params, "pg.shop_id", requestDTO.getShopId());
         SqlUtils.appendDateCondition(whereConditions, params, requestDTO, "pg.created_date");
         SqlUtils.appendSqlLikeCondition(whereConditions, params, "pg.name", requestDTO.getKeyword());
-        SqlUtils.setOrderByDecreasing(whereConditions, "pg.created_date");
+        SqlUtils.setOrderByDecreasing(whereConditions, "pg.id");
         return SqlUtils.queryBuilder(entityManager)
                 .querySql(querySql + whereConditions)
                 .countQuerySql(countSql + whereConditions)

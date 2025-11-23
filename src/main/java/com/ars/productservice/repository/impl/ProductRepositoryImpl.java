@@ -2,11 +2,7 @@ package com.ars.productservice.repository.impl;
 
 import com.ars.productservice.dto.request.product.SearchProductRequest;
 import com.ars.productservice.dto.response.product.ProductDTO;
-import com.ars.productservice.repository.CategoryRepository;
-import com.ars.productservice.repository.ProductGroupRepository;
-import com.ars.productservice.repository.ProductOptionRepository;
 import com.ars.productservice.repository.ProductRepositoryCustom;
-import com.ars.productservice.repository.VariantRepository;
 import com.dct.config.common.SqlUtils;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
@@ -26,7 +22,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public Page<ProductDTO> getAllWithPaging(SearchProductRequest request) {
-        String countSql = "SELECT COUNT(*) FROM product p";
+        String countSql = "SELECT COUNT(*) FROM product p ";
         String querySql = """
             SELECT p.id, p.shop_id as shopId, p.name, p.code, p.price, p.description,
             p.is_customizable as customizable,
@@ -36,7 +32,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         """;
 
         Map<String, Object> params = new HashMap<>();
-        StringBuilder whereConditions = new StringBuilder(" WHERE 1=1 ");
+        StringBuilder whereConditions = new StringBuilder(SqlUtils.WHERE_CLAUSE_REPLACED);
 
         if (Objects.nonNull(request.getGroupId())) {
             querySql += " JOIN product_product_group ppg ON p.id = ppg.product_id";
@@ -56,7 +52,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         SqlUtils.appendSqlBetweenCondition(whereConditions, params, "p.price", request.getMinPrice(), request.getMaxPrice());
         SqlUtils.appendDateCondition(whereConditions, params, request, "p.created_date");
         SqlUtils.appendSqlLikeCondition(whereConditions, params, "p.name", request.getKeyword());
-        SqlUtils.setOrderByDecreasing(whereConditions, "p.created_date");
+        SqlUtils.setOrderByDecreasing(whereConditions, "p.id");
         return SqlUtils.queryBuilder(entityManager)
                 .querySql(querySql + whereConditions)
                 .countQuerySql(countSql + whereConditions)
