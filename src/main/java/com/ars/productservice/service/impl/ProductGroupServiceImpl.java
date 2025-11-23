@@ -12,6 +12,7 @@ import com.dct.model.exception.BaseBadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -43,10 +44,11 @@ public class ProductGroupServiceImpl implements ProductGroupService {
     }
 
     @Override
+    @Transactional
     public BaseResponseDTO save(SaveProductGroupRequest request) {
         ProductGroup category;
 
-        if (Objects.nonNull(request.getId())) {
+        if (Objects.nonNull(request.getId()) && request.getId() > 0) {
             Optional<ProductGroup> productGroupOptional = productGroupRepository.findById(request.getId());
 
             if (productGroupOptional.isEmpty()) {
@@ -58,11 +60,12 @@ public class ProductGroupServiceImpl implements ProductGroupService {
             category = new ProductGroup();
         }
 
-        BeanUtils.copyProperties(request, category);
+        BeanUtils.copyProperties(request, category, "id");
         return BaseResponseDTO.builder().ok(productGroupRepository.save(category));
     }
 
     @Override
+    @Transactional
     public BaseResponseDTO deleteById(Integer id) {
         productGroupRepository.deleteById(id);
         return BaseResponseDTO.builder().ok();

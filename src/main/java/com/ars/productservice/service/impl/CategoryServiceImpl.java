@@ -12,6 +12,7 @@ import com.dct.model.exception.BaseBadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -43,10 +44,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public BaseResponseDTO save(SaveCategoryRequest request) {
         Category category;
 
-        if (Objects.nonNull(request.getId())) {
+        if (Objects.nonNull(request.getId()) && request.getId() > 0) {
             Optional<Category> categoryOptional = categoryRepository.findById(request.getId());
 
             if (categoryOptional.isEmpty()) {
@@ -58,11 +60,12 @@ public class CategoryServiceImpl implements CategoryService {
             category = new Category();
         }
 
-        BeanUtils.copyProperties(request, category);
+        BeanUtils.copyProperties(request, category, "id");
         return BaseResponseDTO.builder().ok(categoryRepository.save(category));
     }
 
     @Override
+    @Transactional
     public BaseResponseDTO deleteById(Integer id) {
         categoryRepository.deleteById(id);
         return BaseResponseDTO.builder().ok();

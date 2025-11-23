@@ -12,6 +12,7 @@ import com.dct.model.exception.BaseBadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -43,10 +44,11 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
+    @Transactional
     public BaseResponseDTO save(SaveAttributeRequest request) {
         Attribute attribute;
 
-        if (Objects.nonNull(request.getId())) {
+        if (Objects.nonNull(request.getId()) && request.getId() > 0) {
             Optional<Attribute> attributeOptional = attributeRepository.findById(request.getId());
 
             if (attributeOptional.isEmpty()) {
@@ -58,11 +60,12 @@ public class AttributeServiceImpl implements AttributeService {
             attribute = new Attribute();
         }
 
-        BeanUtils.copyProperties(request, attribute);
+        BeanUtils.copyProperties(request, attribute, "id");
         return BaseResponseDTO.builder().ok(attributeRepository.save(attribute));
     }
 
     @Override
+    @Transactional
     public BaseResponseDTO deleteById(Integer id) {
         attributeRepository.deleteById(id);
         return BaseResponseDTO.builder().ok();
