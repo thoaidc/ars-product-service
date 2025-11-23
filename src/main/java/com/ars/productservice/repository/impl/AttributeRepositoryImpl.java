@@ -23,10 +23,10 @@ public class AttributeRepositoryImpl implements AttributeRepositoryCustom {
     public Page<AttributeDTO> getAllWithPaging(SearchAttributeRequest request) {
         String countSql = "SELECT COUNT(*)";
         String querySql = "SELECT a.id, a.shop_id as shopId, a.name, a.created_by as createdBy, a.created_date as createdDate";
-        StringBuilder whereConditions = new StringBuilder(" FROM attribute a " + SqlUtils.WHERE_CLAUSE_REPLACED);
+        StringBuilder whereConditions = new StringBuilder(" FROM attribute a " + SqlUtils.WHERE_DEFAULT);
         Map<String, Object> params = new HashMap<>();
-        SqlUtils.appendDateCondition(whereConditions, params, request, "a.created_date");
-        SqlUtils.appendSqlLikeCondition(whereConditions, params, "a.name", request.getKeyword());
+        SqlUtils.addEqualCondition(whereConditions, params, "a.shop_id", request.getShopId());
+        SqlUtils.addLikeCondition(whereConditions, params, request.getKeyword(), "a.name");
         SqlUtils.setOrderByDecreasing(whereConditions, "a.id");
         return SqlUtils.queryBuilder(entityManager)
                 .querySql(querySql + whereConditions)

@@ -31,27 +31,27 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             FROM product p
         """;
 
-        Map<String, Object> params = new HashMap<>();
-        StringBuilder whereConditions = new StringBuilder(SqlUtils.WHERE_CLAUSE_REPLACED);
-
         if (Objects.nonNull(request.getGroupId())) {
-            querySql += " JOIN product_product_group ppg ON p.id = ppg.product_id";
-            countSql += " JOIN product_product_group ppg ON p.id = ppg.product_id";
+            String joinSql = " JOIN product_product_group ppg ON p.id = ppg.product_id";
+            querySql += joinSql;
+            countSql += joinSql;
         }
 
         if (Objects.nonNull(request.getCategoryId())) {
-            querySql += " JOIN product_category pc ON p.id = pc.product_id";
-            countSql += " JOIN product_category pc ON p.id = pc.product_id";
+            String joinSql = " JOIN product_category pc ON p.id = pc.product_id";
+            querySql += joinSql;
+            countSql += joinSql;
         }
 
-        SqlUtils.appendSqlEqualCondition(whereConditions, params, "p.shop_id", request.getShopId());
-        SqlUtils.appendSqlEqualCondition(whereConditions, params, "p.code", request.getCode());
-        SqlUtils.appendSqlEqualCondition(whereConditions, params, "p.status", request.getStatus());
-        SqlUtils.appendSqlEqualCondition(whereConditions, params, "ppg.product_group_id", request.getGroupId());
-        SqlUtils.appendSqlEqualCondition(whereConditions, params, "pc.category_id", request.getCategoryId());
-        SqlUtils.appendSqlBetweenCondition(whereConditions, params, "p.price", request.getMinPrice(), request.getMaxPrice());
-        SqlUtils.appendDateCondition(whereConditions, params, request, "p.created_date");
-        SqlUtils.appendSqlLikeCondition(whereConditions, params, "p.name", request.getKeyword());
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder whereConditions = new StringBuilder(SqlUtils.WHERE_DEFAULT);
+        SqlUtils.addEqualCondition(whereConditions, params, "p.shop_id", request.getShopId());
+        SqlUtils.addEqualCondition(whereConditions, params, "ppg.product_group_id", request.getGroupId());
+        SqlUtils.addEqualCondition(whereConditions, params, "pc.category_id", request.getCategoryId());
+        SqlUtils.addEqualCondition(whereConditions, params, "p.status", request.getStatus());
+        SqlUtils.addBetweenCondition(whereConditions, params, "p.price", request.getMinPrice(), request.getMaxPrice());
+        SqlUtils.addDateTimeCondition(whereConditions, params, request, "p.created_date");
+        SqlUtils.addLikeCondition(whereConditions, params, request.getKeyword(), "p.code", "p.name");
         SqlUtils.setOrderByDecreasing(whereConditions, "p.id");
         return SqlUtils.queryBuilder(entityManager)
                 .querySql(querySql + whereConditions)

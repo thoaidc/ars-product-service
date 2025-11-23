@@ -24,10 +24,9 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     public Page<CategoryDTO> getAllWithPaging(BaseRequestDTO requestDTO) {
         String countSql = "SELECT COUNT(*)";
         String querySql = "SELECT c.id, c.name, c.code, c.description, c.created_by as createdBy, c.created_date as createdDate";
-        StringBuilder whereConditions = new StringBuilder(" FROM category c " + SqlUtils.WHERE_CLAUSE_REPLACED);
+        StringBuilder whereConditions = new StringBuilder(" FROM category c " + SqlUtils.WHERE_DEFAULT);
         Map<String, Object> params = new HashMap<>();
-        SqlUtils.appendDateCondition(whereConditions, params, requestDTO, "c.created_date");
-        SqlUtils.appendSqlLikeCondition(whereConditions, params, "c.name", requestDTO.getKeyword());
+        SqlUtils.addLikeCondition(whereConditions, params, requestDTO.getKeyword(), "c.code", "c.name");
         SqlUtils.setOrderByDecreasing(whereConditions, "c.id");
         return SqlUtils.queryBuilder(entityManager)
                 .querySql(querySql + whereConditions)
