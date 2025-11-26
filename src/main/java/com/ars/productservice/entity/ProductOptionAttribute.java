@@ -20,9 +20,6 @@ public class ProductOptionAttribute extends AbstractAuditingEntity {
     @Column
     private String image;
 
-    @Column
-    private String text;
-
     public Integer getProductOptionId() {
         return productOptionId;
     }
@@ -39,14 +36,6 @@ public class ProductOptionAttribute extends AbstractAuditingEntity {
         this.image = image;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
     public ProductOption getProductOption() {
         return productOption;
     }
@@ -55,4 +44,3 @@ public class ProductOptionAttribute extends AbstractAuditingEntity {
         this.productOption = productOption;
     }
 }
-

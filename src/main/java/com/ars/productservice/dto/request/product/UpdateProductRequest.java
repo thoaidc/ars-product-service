@@ -30,10 +30,6 @@ public class UpdateProductRequest {
     @Size(max = 1000)
     private String description;
     private boolean customizable;
-
-    @Size(max = 500)
-    private String keyword;
-
     private MultipartFile thumbnail;
     private MultipartFile originalImage;
     private List<@NotNull Integer> categoryIds = new ArrayList<>();
@@ -89,14 +85,6 @@ public class UpdateProductRequest {
         this.customizable = customizable;
     }
 
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
     public MultipartFile getThumbnail() {
         return thumbnail;
     }
@@ -145,12 +133,11 @@ public class UpdateProductRequest {
         this.options = options;
     }
 
-    public static class VariantRequest extends CreateProductRequest.VariantRequest {
+    public static class VariantRequest {
         @NotNull
         private Integer id;
         private MultipartFile thumbnail;
         private MultipartFile originalImage;
-
         @NotBlank
         @Size(max = 255)
         private String name;
@@ -158,6 +145,9 @@ public class UpdateProductRequest {
         @NotNull
         @DecimalMin("0.0")
         private BigDecimal price;
+
+        @NotNull
+        private Integer attributeId;
         private List<@NotNull Integer> productOptionIds = new ArrayList<>();
 
         public Integer getId() {
@@ -168,52 +158,50 @@ public class UpdateProductRequest {
             this.id = id;
         }
 
-        @Override
         public MultipartFile getThumbnail() {
             return thumbnail;
         }
 
-        @Override
         public void setThumbnail(MultipartFile thumbnail) {
             this.thumbnail = thumbnail;
         }
 
-        @Override
         public MultipartFile getOriginalImage() {
             return originalImage;
         }
 
-        @Override
         public void setOriginalImage(MultipartFile originalImage) {
             this.originalImage = originalImage;
         }
 
-        @Override
         public String getName() {
             return name;
         }
 
-        @Override
         public void setName(String name) {
             this.name = name;
         }
 
-        @Override
         public BigDecimal getPrice() {
             return price;
         }
 
-        @Override
         public void setPrice(BigDecimal price) {
             this.price = price;
         }
 
-        @Override
+        public Integer getAttributeId() {
+            return attributeId;
+        }
+
+        public void setAttributeId(Integer attributeId) {
+            this.attributeId = attributeId;
+        }
+
         public List<Integer> getProductOptionIds() {
             return productOptionIds;
         }
 
-        @Override
         public void setProductOptionIds(List<Integer> productOptionIds) {
             this.productOptionIds = productOptionIds;
         }
@@ -224,17 +212,6 @@ public class UpdateProductRequest {
         @NotBlank
         @Size(max = 100)
         private String name;
-
-        @NotBlank
-        @Size(max = 50)
-        private String type;
-        private Float topPercentage;
-        private Float leftPercentage;
-        private Float widthPercentage;
-        private Float heightPercentage;
-        @Size(max = 1000)
-        private String description;
-
         private List<@Valid OptionAttribute> attributes = new ArrayList<>();
 
         public Integer getId() {
@@ -253,54 +230,6 @@ public class UpdateProductRequest {
             this.name = name;
         }
 
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public Float getTopPercentage() {
-            return topPercentage;
-        }
-
-        public void setTopPercentage(Float topPercentage) {
-            this.topPercentage = topPercentage;
-        }
-
-        public Float getLeftPercentage() {
-            return leftPercentage;
-        }
-
-        public void setLeftPercentage(Float leftPercentage) {
-            this.leftPercentage = leftPercentage;
-        }
-
-        public Float getWidthPercentage() {
-            return widthPercentage;
-        }
-
-        public void setWidthPercentage(Float widthPercentage) {
-            this.widthPercentage = widthPercentage;
-        }
-
-        public Float getHeightPercentage() {
-            return heightPercentage;
-        }
-
-        public void setHeightPercentage(Float heightPercentage) {
-            this.heightPercentage = heightPercentage;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
         public List<OptionAttribute> getAttributes() {
             return attributes;
         }
@@ -312,9 +241,6 @@ public class UpdateProductRequest {
         public static class OptionAttribute {
             private Integer id;
             private MultipartFile image;
-
-            @Size(max = 255)
-            private String text;
 
             public Integer getId() {
                 return id;
@@ -330,14 +256,6 @@ public class UpdateProductRequest {
 
             public void setImage(MultipartFile image) {
                 this.image = image;
-            }
-
-            public String getText() {
-                return text;
-            }
-
-            public void setText(String text) {
-                this.text = text;
             }
         }
     }

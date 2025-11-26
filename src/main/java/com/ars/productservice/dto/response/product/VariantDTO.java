@@ -1,7 +1,6 @@
 package com.ars.productservice.dto.response.product;
 
 import com.dct.model.dto.response.AuditingDTO;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,8 +13,6 @@ public class VariantDTO extends AuditingDTO {
     private String name;
     private BigDecimal price;
     private String thumbnailUrl;
-    @JsonIgnore
-    private String originalImage;
     private List<ProductOptionDTO> productOptions = new ArrayList<>();
 
     public VariantDTO() {}
@@ -27,7 +24,6 @@ public class VariantDTO extends AuditingDTO {
         String name,
         BigDecimal price,
         String thumbnailUrl,
-        String originalImage,
         String createdBy,
         Instant createdDate
     ) {
@@ -37,7 +33,6 @@ public class VariantDTO extends AuditingDTO {
         this.name = name;
         this.price = price;
         this.thumbnailUrl = thumbnailUrl;
-        this.originalImage = originalImage;
     }
 
     public Integer getProductId() {
@@ -78,14 +73,6 @@ public class VariantDTO extends AuditingDTO {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
-    }
-
-    public String getOriginalImage() {
-        return originalImage;
-    }
-
-    public void setOriginalImage(String originalImage) {
-        this.originalImage = originalImage;
     }
 
     public List<ProductOptionDTO> getProductOptions() {

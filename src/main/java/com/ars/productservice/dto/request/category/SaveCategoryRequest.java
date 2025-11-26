@@ -10,10 +10,6 @@ public class SaveCategoryRequest {
     @Max(value = 200)
     private String name;
 
-    @NotBlank
-    @Max(value = 50)
-    private String code;
-
     @Max(value = 255)
     private String description;
 
@@ -31,14 +27,6 @@ public class SaveCategoryRequest {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getDescription() {

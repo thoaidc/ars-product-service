@@ -31,10 +31,6 @@ public class CreateProductRequest {
     @Size(max = 1000)
     private String description;
     private boolean customizable;
-
-    @Size(max = 500)
-    private String keyword;
-
     private MultipartFile thumbnail;
     private MultipartFile originalImage;
     private List<@NotNull Integer> categoryIds = new ArrayList<>();
@@ -111,17 +107,6 @@ public class CreateProductRequest {
         @NotBlank
         @Size(max = 100)
         private String name;
-
-        @NotBlank
-        @Size(max = 50)
-        private String type;
-        private Float topPercentage;
-        private Float leftPercentage;
-        private Float widthPercentage;
-        private Float heightPercentage;
-        @Size(max = 1000)
-        private String description;
-
         private List<@Valid OptionAttribute> attributes = new ArrayList<>();
 
         public Integer getId() {
@@ -140,54 +125,6 @@ public class CreateProductRequest {
             this.name = name;
         }
 
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public Float getWidthPercentage() {
-            return widthPercentage;
-        }
-
-        public void setWidthPercentage(Float widthPercentage) {
-            this.widthPercentage = widthPercentage;
-        }
-
-        public Float getHeightPercentage() {
-            return heightPercentage;
-        }
-
-        public void setHeightPercentage(Float heightPercentage) {
-            this.heightPercentage = heightPercentage;
-        }
-
-        public Float getTopPercentage() {
-            return topPercentage;
-        }
-
-        public void setTopPercentage(Float topPercentage) {
-            this.topPercentage = topPercentage;
-        }
-
-        public Float getLeftPercentage() {
-            return leftPercentage;
-        }
-
-        public void setLeftPercentage(Float leftPercentage) {
-            this.leftPercentage = leftPercentage;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
         public List<OptionAttribute> getAttributes() {
             return attributes;
         }
@@ -198,8 +135,6 @@ public class CreateProductRequest {
 
         public static class OptionAttribute {
             private MultipartFile image;
-            @Size(max = 255)
-            private String text;
 
             public MultipartFile getImage() {
                 return image;
@@ -207,14 +142,6 @@ public class CreateProductRequest {
 
             public void setImage(MultipartFile image) {
                 this.image = image;
-            }
-
-            public String getText() {
-                return text;
-            }
-
-            public void setText(String text) {
-                this.text = text;
             }
         }
     }
@@ -265,14 +192,6 @@ public class CreateProductRequest {
 
     public void setCustomizable(boolean customizable) {
         this.customizable = customizable;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
     }
 
     public MultipartFile getThumbnail() {

@@ -149,7 +149,6 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(request.getPrice());
         product.setDescription(request.getDescription());
         product.setCustomizable(request.isCustomizable());
-        product.setKeyword(request.getKeyword());
         product.setStatus(ProductConstants.Status.ACTIVE); // default status
         product.setThumbnailUrl(fileUtils.autoCompressImageAndSave(request.getThumbnail()));
         product.setOriginalImage(fileUtils.save(request.getOriginalImage()));
@@ -219,18 +218,11 @@ public class ProductServiceImpl implements ProductService {
         option.setProductId(product.getId());
         option.setRefId(optionRequest.getId());
         option.setName(optionRequest.getName());
-        option.setType(optionRequest.getType());
-        option.setTopPercentage(optionRequest.getTopPercentage());
-        option.setLeftPercentage(optionRequest.getLeftPercentage());
-        option.setWidthPercentage(optionRequest.getWidthPercentage());
-        option.setHeightPercentage(optionRequest.getHeightPercentage());
-        option.setDescription(optionRequest.getDescription());
 
         if (!optionRequest.getAttributes().isEmpty()) {
             List<ProductOptionAttribute> attrs = optionRequest.getAttributes().stream()
                     .map(attrReq -> {
                         ProductOptionAttribute attr = new ProductOptionAttribute();
-                        attr.setText(attrReq.getText());
                         attr.setImage(fileUtils.autoCompressImageAndSave(attrReq.getImage()));
                         attr.setProductOption(option);
                         return attr;
@@ -351,9 +343,9 @@ public class ProductServiceImpl implements ProductService {
             if (Objects.isNull(productOption)) {
                 productOption = new ProductOption();
                 productOption.setProductId(productId);
-                productOption.setRefId(productOptionRequest.getId());
             }
 
+            productOption.setRefId(productOptionRequest.getId());
             BeanUtils.copyProperties(productOptionRequest, productOption, "attributes");
             updateProductOptionAttributes(productOption, productOptionRequest);
             productOptionsToSave.add(productOption);
@@ -388,7 +380,6 @@ public class ProductServiceImpl implements ProductService {
                 oldAttrs.add(productOptionAttribute);
             }
 
-            productOptionAttribute.setText(attributeRequest.getText());
             String newImageUrl = fileUtils.autoCompressImageAndSave(attributeRequest.getImage());
 
             if (StringUtils.hasText(newImageUrl)) {

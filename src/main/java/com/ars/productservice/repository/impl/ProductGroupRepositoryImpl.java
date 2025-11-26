@@ -23,12 +23,12 @@ public class ProductGroupRepositoryImpl implements ProductGroupRepositoryCustom 
     @Override
     public Page<ProductGroupDTO> getAllWithPaging(SearchProductGroupRequest requestDTO) {
         String countSql = "SELECT COUNT(*)";
-        String querySql = "SELECT pg.id, pg.shop_id as shopId, pg.name, pg.code, pg.description, " +
+        String querySql = "SELECT pg.id, pg.shop_id as shopId, pg.name, " +
                 "pg.created_by as createdBy, pg.created_date as createdDate";
         StringBuilder whereConditions = new StringBuilder(" FROM product_group pg " + SqlUtils.WHERE_DEFAULT);
         Map<String, Object> params = new HashMap<>();
         SqlUtils.addEqualCondition(whereConditions, params, "pg.shop_id", requestDTO.getShopId());
-        SqlUtils.addLikeCondition(whereConditions, params, requestDTO.getKeyword(), "pg.code", "pg.name");
+        SqlUtils.addLikeCondition(whereConditions, params, requestDTO.getKeyword(), "pg.name");
         SqlUtils.setOrderByDecreasing(whereConditions, "pg.id");
         return SqlUtils.queryBuilder(entityManager)
                 .querySql(querySql + whereConditions)

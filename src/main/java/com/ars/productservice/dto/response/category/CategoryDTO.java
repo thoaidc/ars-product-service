@@ -6,7 +6,6 @@ import java.time.Instant;
 
 public class CategoryDTO extends AuditingDTO {
     private String name;
-    private String code;
     private String description;
 
     public CategoryDTO() {}
@@ -14,13 +13,11 @@ public class CategoryDTO extends AuditingDTO {
     public CategoryDTO(
         Integer id,
         String name,
-        String code,
         String description,
         String createdBy,
         Instant createdDate
     ) {
         this.name = name;
-        this.code = code;
         this.description = description;
         setId(id);
         setCreatedBy(createdBy);
@@ -33,14 +30,6 @@ public class CategoryDTO extends AuditingDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getDescription() {

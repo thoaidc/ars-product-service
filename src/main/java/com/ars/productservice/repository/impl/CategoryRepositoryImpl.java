@@ -23,10 +23,10 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     @Override
     public Page<CategoryDTO> getAllWithPaging(BaseRequestDTO requestDTO) {
         String countSql = "SELECT COUNT(*)";
-        String querySql = "SELECT c.id, c.name, c.code, c.description, c.created_by as createdBy, c.created_date as createdDate";
+        String querySql = "SELECT c.id, c.name, c.description, c.created_by as createdBy, c.created_date as createdDate";
         StringBuilder whereConditions = new StringBuilder(" FROM category c " + SqlUtils.WHERE_DEFAULT);
         Map<String, Object> params = new HashMap<>();
-        SqlUtils.addLikeCondition(whereConditions, params, requestDTO.getKeyword(), "c.code", "c.name");
+        SqlUtils.addLikeCondition(whereConditions, params, requestDTO.getKeyword(), "c.name");
         SqlUtils.setOrderByDecreasing(whereConditions, "c.id");
         return SqlUtils.queryBuilder(entityManager)
                 .querySql(querySql + whereConditions)

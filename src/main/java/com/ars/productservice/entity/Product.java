@@ -28,7 +28,6 @@ import java.util.List;
                         @ColumnResult(name = "customizable", type = Boolean.class),
                         @ColumnResult(name = "status", type = String.class),
                         @ColumnResult(name = "thumbnailUrl", type = String.class),
-                        @ColumnResult(name = "originalImage", type = String.class),
                         @ColumnResult(name = "createdBy", type = String.class),
                         @ColumnResult(name = "createdDate", type = Instant.class)
                     }
@@ -69,9 +68,6 @@ public class Product extends AbstractAuditingEntity {
 
     @Column(name = "normalized_name")
     private String normalizedName;
-
-    @Column(length = 500)
-    private String keyword;
 
     @ManyToMany(
         cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH },
@@ -180,14 +176,6 @@ public class Product extends AbstractAuditingEntity {
 
     public void setNormalizedName(String normalizedName) {
         this.normalizedName = normalizedName;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
     }
 
     public List<ProductGroup> getProductGroups() {
