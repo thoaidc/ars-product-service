@@ -126,14 +126,16 @@ public class ProductServiceImpl implements ProductService {
         product.setOriginalImage(fileUtils.save(request.getOriginalImage()));
 
         // Map product images
-        List<String> productImageUrls = fileUtils.autoCompressImageAndSave(request.getProductImages());
-        List<ProductImage> productImages = productImageUrls.stream().filter(StringUtils::hasText).map(imageUrl -> {
-            ProductImage productImage = new ProductImage();
-            productImage.setImage(imageUrl);
-            productImage.setProduct(product);
-            return productImage;
-        }).toList();
-        product.setImages(productImages);
+        if (Objects.nonNull(request.getProductImages()) && request.getProductImages().length > 0) {
+            List<String> productImageUrls = fileUtils.autoCompressImageAndSave(request.getProductImages());
+            List<ProductImage> productImages = productImageUrls.stream().filter(StringUtils::hasText).map(imageUrl -> {
+                ProductImage productImage = new ProductImage();
+                productImage.setImage(imageUrl);
+                productImage.setProduct(product);
+                return productImage;
+            }).toList();
+            product.setImages(productImages);
+        }
 
         // Map categories
         if (!request.getCategoryIds().isEmpty()) {
