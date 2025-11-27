@@ -5,13 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "product_option_attribute")
+@Table(name = "product_option_value")
 @SuppressWarnings("unused")
-public class ProductOptionAttribute extends AbstractAuditingEntity {
-
-    @Column(name = "product_option_id", nullable = false, insertable = false, updatable = false)
-    private Integer productOptionId;
-
+public class ProductOptionValue extends AbstractAuditingEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id", nullable = false)
     @JsonIgnore
@@ -19,14 +15,6 @@ public class ProductOptionAttribute extends AbstractAuditingEntity {
 
     @Column
     private String image;
-
-    public Integer getProductOptionId() {
-        return productOptionId;
-    }
-
-    public void setProductOptionId(Integer productOptionId) {
-        this.productOptionId = productOptionId;
-    }
 
     public String getImage() {
         return image;

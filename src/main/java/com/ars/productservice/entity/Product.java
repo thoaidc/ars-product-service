@@ -69,6 +69,12 @@ public class Product extends AbstractAuditingEntity {
     @Column(name = "normalized_name")
     private String normalizedName;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<ProductImage> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<ProductOption> options = new ArrayList<>();
+
     @ManyToMany(
         cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH },
         fetch = FetchType.LAZY
@@ -92,11 +98,6 @@ public class Product extends AbstractAuditingEntity {
     )
     @JsonIgnore
     private List<Category> categories = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", referencedColumnName="id")
-    @JsonIgnore
-    private List<ProductOption> options = new ArrayList<>();
 
     public Integer getShopId() {
         return shopId;
@@ -176,6 +177,14 @@ public class Product extends AbstractAuditingEntity {
 
     public void setNormalizedName(String normalizedName) {
         this.normalizedName = normalizedName;
+    }
+
+    public List<ProductImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ProductImage> images) {
+        this.images = images;
     }
 
     public List<ProductGroup> getProductGroups() {

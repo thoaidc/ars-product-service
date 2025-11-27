@@ -32,35 +32,16 @@ import java.util.List;
 )
 @SuppressWarnings("unused")
 public class ProductOption extends AbstractAuditingEntity {
-
-    @Column(name = "product_id", nullable = false)
-    private Integer productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore
+    private Product product;
 
     @Column(length = 100, nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "productOption", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<ProductOptionAttribute> attributes = new ArrayList<>();
-
-    @Transient
-    @JsonIgnore
-    private Integer refId; // Not mapping to DB column, just to reference request mapping
-
-    public Integer getRefId() {
-        return refId;
-    }
-
-    public void setRefId(Integer refId) {
-        this.refId = refId;
-    }
-
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
+    private List<ProductOptionValue> values = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -70,11 +51,19 @@ public class ProductOption extends AbstractAuditingEntity {
         this.name = name;
     }
 
-    public List<ProductOptionAttribute> getAttributes() {
-        return attributes;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setAttributes(List<ProductOptionAttribute> attributes) {
-        this.attributes = attributes;
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public List<ProductOptionValue> getValues() {
+        return values;
+    }
+
+    public void setValues(List<ProductOptionValue> values) {
+        this.values = values;
     }
 }

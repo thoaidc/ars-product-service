@@ -17,7 +17,7 @@ public class ProductDTO extends AuditingDTO {
     private Boolean customizable;
     private String status;
     private String thumbnailUrl;
-    private List<VariantDTO> variants = new ArrayList<>();
+    private List<String> images = new ArrayList<>();
     private List<CategoryDTO> categories = new ArrayList<>();
     private List<ProductGroupDTO> productGroups = new ArrayList<>();
     private List<ProductOptionDTO> productOptions = new ArrayList<>();
@@ -112,12 +112,12 @@ public class ProductDTO extends AuditingDTO {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public List<VariantDTO> getVariants() {
-        return variants;
+    public List<String> getImages() {
+        return images;
     }
 
-    public void setVariants(List<VariantDTO> variants) {
-        this.variants = variants;
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 
     public List<ProductOptionDTO> getProductOptions() {

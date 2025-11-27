@@ -27,6 +27,25 @@ CREATE TABLE product
 
 
 -- ============================
+-- TABLE: product_image
+-- ============================
+CREATE TABLE product_image
+(
+    id                 INT PRIMARY KEY AUTO_INCREMENT,
+    product_id  INT NOT NULL,
+    image              VARCHAR(255),
+    created_by         VARCHAR(50),
+    last_modified_by   VARCHAR(50),
+    created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_product_product_image
+        FOREIGN KEY (product_id) REFERENCES product (id)
+            ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+
+-- ============================
 -- TABLE: product_group
 -- ============================
 CREATE TABLE product_group
@@ -109,49 +128,6 @@ CREATE INDEX idx_pc_category ON product_category (category_id);
 CREATE INDEX idx_pc_product ON product_category (product_id);
 
 -- ============================
--- TABLE: attribute
--- ============================
-CREATE TABLE attribute
-(
-    id             INT PRIMARY KEY AUTO_INCREMENT,
-    shop_id        INT NOT NULL,
-    name           VARCHAR(100) NOT NULL,
-    created_by         VARCHAR(50),
-    last_modified_by   VARCHAR(50),
-    created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
--- ============================
--- TABLE: variant
--- ============================
-CREATE TABLE variant
-(
-    id                 INT PRIMARY KEY AUTO_INCREMENT,
-    name               VARCHAR(200) NOT NULL,
-    price              DECIMAL(21, 6),
-    product_id         INT          NOT NULL,
-    attribute_id       INT          NOT NULL,
-    thumbnail_url      VARCHAR(255),
-    original_image     VARCHAR(255),
-    created_by         VARCHAR(50),
-    last_modified_by   VARCHAR(50),
-    created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_variant_product
-        FOREIGN KEY (product_id) REFERENCES product (id)
-            ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_variant_attribute_id
-        FOREIGN KEY (attribute_id) REFERENCES attribute (id)
-            ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
-
-CREATE INDEX idx_variant_product ON variant (product_id);
-
-
--- ============================
 -- TABLE: product_option
 -- ============================
 CREATE TABLE product_option
@@ -173,9 +149,9 @@ CREATE INDEX idx_po_product ON product_option (product_id);
 
 
 -- ============================
--- TABLE: product_option_attribute
+-- TABLE: product_option_value
 -- ============================
-CREATE TABLE product_option_attribute
+CREATE TABLE product_option_value
 (
     id                 INT PRIMARY KEY AUTO_INCREMENT,
     product_option_id  INT NOT NULL,
@@ -190,32 +166,6 @@ CREATE TABLE product_option_attribute
             ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
-CREATE INDEX idx_poa_po ON product_option_attribute (product_option_id);
-
-
--- ============================
--- TABLE: variant_option
--- ============================
-CREATE TABLE variant_option
-(
-    id                 INT PRIMARY KEY AUTO_INCREMENT,
-    variant_id         INT NOT NULL,
-    product_option_id  INT NOT NULL,
-    created_by         VARCHAR(50),
-    last_modified_by   VARCHAR(50),
-    created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_vo_variant
-        FOREIGN KEY (variant_id) REFERENCES variant (id)
-            ON DELETE CASCADE ON UPDATE CASCADE,
-
-    CONSTRAINT fk_vo_po
-        FOREIGN KEY (product_option_id) REFERENCES product_option (id)
-            ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
-
-CREATE INDEX idx_vo_variant ON variant_option (variant_id);
-CREATE INDEX idx_vo_po ON variant_option (product_option_id);
+CREATE INDEX idx_poa_po ON product_option_value (product_option_id);
 
 SET FOREIGN_KEY_CHECKS = 1;

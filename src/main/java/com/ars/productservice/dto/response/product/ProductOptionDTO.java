@@ -1,6 +1,6 @@
 package com.ars.productservice.dto.response.product;
 
-import com.ars.productservice.entity.ProductOptionAttribute;
+import com.ars.productservice.entity.ProductOptionValue;
 import com.dct.model.dto.response.AuditingDTO;
 
 import java.time.Instant;
@@ -10,7 +10,7 @@ import java.util.List;
 public class ProductOptionDTO extends AuditingDTO {
     private Integer productId;
     private String name;
-    private List<ProductOptionAttribute> attributes = new ArrayList<>();
+    private List<ProductOptionValue> values = new ArrayList<>();
 
     public ProductOptionDTO() {}
 
@@ -42,11 +42,11 @@ public class ProductOptionDTO extends AuditingDTO {
         this.name = name;
     }
 
-    public List<ProductOptionAttribute> getAttributes() {
-        return attributes;
+    public List<ProductOptionValue> getValues() {
+        return values;
     }
 
-    public void setAttributes(List<ProductOptionAttribute> attributes) {
-        this.attributes = attributes;
+    public void setValues(List<ProductOptionValue> values) {
+        this.values = values;
     }
 }

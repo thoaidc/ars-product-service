@@ -4,29 +4,23 @@ import com.ars.productservice.constants.ProductConstants;
 import com.ars.productservice.dto.request.product.CreateProductRequest;
 import com.ars.productservice.dto.request.product.SearchProductRequest;
 import com.ars.productservice.dto.request.product.UpdateProductRequest;
-import com.ars.productservice.dto.request.product.UpdateProductRequest.OptionRequest;
 import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.ars.productservice.dto.response.product.ProductDTO;
 import com.ars.productservice.dto.response.product.ProductGroupDTO;
 import com.ars.productservice.dto.response.product.ProductOptionDTO;
-import com.ars.productservice.dto.response.product.VariantDTO;
 import com.ars.productservice.entity.Category;
 import com.ars.productservice.entity.Product;
 import com.ars.productservice.entity.ProductCategory;
 import com.ars.productservice.entity.ProductGroup;
+import com.ars.productservice.entity.ProductImage;
 import com.ars.productservice.entity.ProductOption;
-import com.ars.productservice.entity.ProductOptionAttribute;
+import com.ars.productservice.entity.ProductOptionValue;
 import com.ars.productservice.entity.ProductProductGroup;
-import com.ars.productservice.entity.Variant;
-import com.ars.productservice.entity.VariantOption;
 import com.ars.productservice.repository.CategoryRepository;
 import com.ars.productservice.repository.ProductCategoryRepository;
 import com.ars.productservice.repository.ProductGroupRepository;
-import com.ars.productservice.repository.ProductOptionRepository;
 import com.ars.productservice.repository.ProductProductGroupRepository;
 import com.ars.productservice.repository.ProductRepository;
-import com.ars.productservice.repository.VariantOptionRepository;
-import com.ars.productservice.repository.VariantRepository;
 import com.ars.productservice.service.ProductService;
 
 import com.dct.config.common.FileUtils;
@@ -38,9 +32,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,30 +44,21 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
     private static final String ENTITY_NAME = "com.ars.productservice.service.impl.ProductServiceImpl";
+    private final FileUtils fileUtils = new FileUtils();
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductGroupRepository productGroupRepository;
-    private final VariantRepository variantRepository;
-    private final ProductOptionRepository productOptionRepository;
-    private final FileUtils fileUtils = new FileUtils();
-    private final VariantOptionRepository variantOptionRepository;
     private final ProductProductGroupRepository productProductGroupRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
                               ProductGroupRepository productGroupRepository,
-                              VariantRepository variantRepository,
-                              ProductOptionRepository productOptionRepository,
-                              VariantOptionRepository variantOptionRepository,
                               ProductProductGroupRepository productProductGroupRepository,
                               ProductCategoryRepository productCategoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productGroupRepository = productGroupRepository;
-        this.variantRepository = variantRepository;
-        this.productOptionRepository = productOptionRepository;
-        this.variantOptionRepository = variantOptionRepository;
         this.productProductGroupRepository = productProductGroupRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.fileUtils.setPrefixPath(ProductConstants.Upload.PREFIX);
@@ -98,21 +83,8 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productOptional.get();
         ProductDTO productDTO = new ProductDTO();
-        BeanUtils.copyProperties(product, productDTO, "productOptions", "categories", "productGroups");
-        List<Variant> variants = variantRepository.findAllByProductId(productId);
-
-        List<VariantDTO> variantDTOS = variants.stream().map(variant -> {
-            VariantDTO variantDTO = new VariantDTO();
-            BeanUtils.copyProperties(variant, variantDTO, "productOptions");
-            List<ProductOptionDTO> productOptionDTOS = variant.getProductOptions().stream()
-                .map(productOption -> {
-                    ProductOptionDTO productOptionDTO = new ProductOptionDTO();
-                    BeanUtils.copyProperties(productOption, productOptionDTO, "attributes");
-                    return productOptionDTO;
-                }).toList();
-            variantDTO.setProductOptions(productOptionDTOS);
-            return variantDTO;
-        }).toList();
+        BeanUtils.copyProperties(product, productDTO, "images", "options", "categories", "productGroups");
+        productDTO.setImages(product.getImages().stream().map(ProductImage::getImage).toList());
 
         List<ProductOptionDTO> productOptionDTOS = product.getOptions().stream().map(productOption -> {
             ProductOptionDTO productOptionDTO = new ProductOptionDTO();
@@ -135,7 +107,6 @@ public class ProductServiceImpl implements ProductService {
         productDTO.setCategories(categoryDTOS);
         productDTO.setProductGroups(productGroupDTOS);
         productDTO.setProductOptions(productOptionDTOS);
-        productDTO.setVariants(variantDTOS);
         return BaseResponseDTO.builder().ok(productDTO);
     }
 
@@ -153,6 +124,16 @@ public class ProductServiceImpl implements ProductService {
         product.setThumbnailUrl(fileUtils.autoCompressImageAndSave(request.getThumbnail()));
         product.setOriginalImage(fileUtils.save(request.getOriginalImage()));
 
+        // Map product images
+        List<String> productImageUrls = fileUtils.autoCompressImageAndSave(request.getProductImages());
+        List<ProductImage> productImages = productImageUrls.stream().filter(StringUtils::hasText).map(imageUrl -> {
+            ProductImage productImage = new ProductImage();
+            productImage.setImage(imageUrl);
+            productImage.setProduct(product);
+            return productImage;
+        }).toList();
+        product.setImages(productImages);
+
         // Map categories
         if (!request.getCategoryIds().isEmpty()) {
             List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
@@ -165,71 +146,30 @@ public class ProductServiceImpl implements ProductService {
             product.setProductGroups(productGroups);
         }
 
-        Product productSave = productRepository.save(product);
-        Map<Integer, Integer> productOptionIdMap = new HashMap<>();
-
         // Map product options
         if (!request.getOptions().isEmpty()) {
             List<ProductOption> productOptions = request.getOptions().stream()
-                    .map(option -> mapOptionRequest(option, productSave))
+                    .map(option -> mapOptionRequest(option, product))
                     .toList();
-            productOptionRepository.saveAll(productOptions);
-            productSave.setOptions(productOptions);
-            productOptions.forEach(productOption ->
-                productOptionIdMap.put(productOption.getRefId(), productOption.getId())
-            );
+            product.setOptions(productOptions);
         }
 
-        // Map variants
-        if (!request.getVariants().isEmpty()) {
-            List<Variant> variants = request.getVariants().stream()
-                    .map(variantRequest -> mapVariantRequest(variantRequest, productSave))
-                    .toList();
-            variantRepository.saveAll(variants);
-            List<VariantOption> variantOptions = new ArrayList<>();
-            variants.forEach(variant ->
-                variant.getProductOptionIds().forEach(productOptionId -> {
-                    VariantOption variantOption = new VariantOption();
-                    variantOption.setVariantId(variant.getId());
-                    variantOption.setProductOptionId(productOptionIdMap.get(productOptionId));
-                    variantOptions.add(variantOption);
-                })
-            );
-            variantOptionRepository.saveAll(variantOptions);
-        }
-
-        return BaseResponseDTO.builder().ok(productSave);
+        productRepository.save(product);
+        return BaseResponseDTO.builder().ok(product);
     }
 
-    private Variant mapVariantRequest(CreateProductRequest.VariantRequest variantRequest, Product product) {
-        Variant variant = new Variant();
-        variant.setAttributeId(variantRequest.getAttributeId());
-        variant.setProductId(product.getId());
-        variant.setName(variantRequest.getName());
-        variant.setPrice(variantRequest.getPrice());
-        variant.setThumbnailUrl(fileUtils.autoCompressImageAndSave(variantRequest.getThumbnail()));
-        variant.setOriginalImage(fileUtils.save(variantRequest.getOriginalImage()));
-        variant.setProductOptionIds(variantRequest.getProductOptionIds());
-        return variant;
-    }
-
-    private ProductOption mapOptionRequest(CreateProductRequest.OptionRequest optionRequest, Product product) {
+    private ProductOption mapOptionRequest(CreateProductRequest.Option optionRequest, Product product) {
         ProductOption option = new ProductOption();
-        option.setProductId(product.getId());
-        option.setRefId(optionRequest.getId());
         option.setName(optionRequest.getName());
-
-        if (!optionRequest.getAttributes().isEmpty()) {
-            List<ProductOptionAttribute> attrs = optionRequest.getAttributes().stream()
-                    .map(attrReq -> {
-                        ProductOptionAttribute attr = new ProductOptionAttribute();
-                        attr.setImage(fileUtils.autoCompressImageAndSave(attrReq.getImage()));
-                        attr.setProductOption(option);
-                        return attr;
-                    }).toList();
-            option.setAttributes(attrs);
-        }
-
+        option.setProduct(product);
+        List<String> imageUrls = fileUtils.autoCompressImageAndSave(optionRequest.getImages());
+        List<ProductOptionValue> images = imageUrls.stream().filter(StringUtils::hasText).map(imageUrl -> {
+            ProductOptionValue optionValue = new ProductOptionValue();
+            optionValue.setImage(imageUrl);
+            optionValue.setProductOption(option);
+            return optionValue;
+        }).toList();
+        option.setValues(images);
         return option;
     }
 
@@ -244,7 +184,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = productOptional.get();
-        BeanUtils.copyProperties(request, product, "originalImage", "thumbnail", "options");
+        BeanUtils.copyProperties(request, product, "originalImage", "thumbnail", "images", "options");
         String newThumbnailUrl = fileUtils.autoCompressImageAndSave(request.getThumbnail());
         String newOriginalImageUrl = fileUtils.save(request.getOriginalImage());
 
@@ -260,10 +200,29 @@ public class ProductServiceImpl implements ProductService {
 
         updateProductCategories(request);
         updateProductProductGroups(request);
-        List<ProductOption> productOptionsUpdated = updateProductOptions(request);
-        updateVariants(request, productOptionsUpdated);
+        updateProductImages(product, request);
+        updateProductOptions(product, request);
         productRepository.save(product);
         return BaseResponseDTO.builder().ok(product);
+    }
+
+    private void updateProductImages(Product product, UpdateProductRequest request) {
+        List<ProductImage> oldProductImages = product.getImages();
+        List<Integer> oldProductImageIds = request.getProductImages().stream()
+                .map(UpdateProductRequest.ProductImage::getId)
+                .filter(Objects::nonNull).toList();
+        oldProductImages.removeIf(productImage -> oldProductImageIds.stream()
+            .noneMatch(oldProductImageId -> Objects.equals(oldProductImageId, productImage.getId()))
+        );
+        List<ProductImage> newProductImages = request.getProductImages().stream()
+                .filter(productImage -> Objects.isNull(productImage.getId()))
+                .map(productImage -> {
+                    ProductImage newProductImage = new ProductImage();
+                    newProductImage.setProduct(product);
+                    newProductImage.setImage(fileUtils.autoCompressImageAndSave(productImage.getImage()));
+                    return newProductImage;
+                }).toList();
+        oldProductImages.addAll(newProductImages);
     }
 
     private void updateProductCategories(UpdateProductRequest request) {
@@ -322,133 +281,57 @@ public class ProductServiceImpl implements ProductService {
         productProductGroupRepository.deleteAll(productProductGroupsToDelete);
     }
 
-    private List<ProductOption> updateProductOptions(UpdateProductRequest request) {
-        Integer productId = request.getId();
-        List<ProductOption> oldProductOptions = productOptionRepository.findAllByProductId(productId);
+    private void updateProductOptions(Product product, UpdateProductRequest request) {
+        List<ProductOption> oldProductOptions = product.getOptions();
         Map<Integer, ProductOption> oldProductOptionMap = oldProductOptions.stream()
                 .collect(Collectors.toMap(ProductOption::getId, productOption -> productOption));
-        List<UpdateProductRequest.OptionRequest> productOptionsRequest = request.getOptions();
-        List<Integer> newProductOptionIds = productOptionsRequest.stream()
-                .map(UpdateProductRequest.OptionRequest::getId)
-                .filter(Objects::nonNull)
-                .toList();
-        List<ProductOption> productOptionsToSave = new ArrayList<>();
-        List<ProductOption> productOptionsToDelete = oldProductOptions.stream()
-                .filter(oldProductOption -> !newProductOptionIds.contains(oldProductOption.getId()))
-                .toList();
+        List<Integer> oldProductOptionIds = new ArrayList<>();
+        List<ProductOption> newProductOptions = new ArrayList<>();
 
-        for (UpdateProductRequest.OptionRequest productOptionRequest : productOptionsRequest) {
-            ProductOption productOption = oldProductOptionMap.get(productOptionRequest.getId());
+        request.getOptions().forEach(option -> {
+            if (Objects.isNull(option.getId())) {
+                CreateProductRequest.Option optionRequest = new CreateProductRequest.Option();
+                optionRequest.setName(option.getName());
+                List<MultipartFile> images = option.getImages().stream()
+                        .map(UpdateProductRequest.Option.OptionValue::getImage)
+                        .toList();
+                optionRequest.setImages(images.toArray(new MultipartFile[0]));
+                ProductOption newProductOption = mapOptionRequest(optionRequest, product);
+                newProductOptions.add(newProductOption);
+            } else {
+                oldProductOptionIds.add(option.getId());
+                ProductOption oldProductOption = oldProductOptionMap.get(option.getId());
 
-            if (Objects.isNull(productOption)) {
-                productOption = new ProductOption();
-                productOption.setProductId(productId);
+                if (Objects.nonNull(oldProductOption)) {
+                    oldProductOption.setName(option.getName());
+                    updateProductOptionValues(oldProductOption, option);
+                }
             }
+        });
 
-            productOption.setRefId(productOptionRequest.getId());
-            BeanUtils.copyProperties(productOptionRequest, productOption, "attributes");
-            updateProductOptionAttributes(productOption, productOptionRequest);
-            productOptionsToSave.add(productOption);
-        }
-
-        productOptionRepository.deleteAll(productOptionsToDelete);
-        return productOptionRepository.saveAll(productOptionsToSave);
-    }
-
-    private void updateProductOptionAttributes(ProductOption option, OptionRequest productOptionRequest) {
-        List<ProductOptionAttribute> oldAttrs = option.getAttributes();
-        List<OptionRequest.OptionAttribute> productOptionAttributesRequest = productOptionRequest.getAttributes();
-        List<Integer> newOptionAttributeIds = productOptionAttributesRequest.stream()
-                .map(OptionRequest.OptionAttribute::getId)
-                .filter(Objects::nonNull)
-                .toList();
-
-        oldAttrs.removeIf(attribute -> newOptionAttributeIds.stream()
-            .noneMatch(productOptionAttributeId -> Objects.equals(productOptionAttributeId, attribute.getId()))
+        oldProductOptions.removeIf(oldProductOption -> oldProductOptionIds.stream()
+            .noneMatch(oldProductOptionId -> Objects.equals(oldProductOptionId, oldProductOption.getId()))
         );
-
-        Map<Integer, ProductOptionAttribute> oldProductOptionAttributeMap = oldAttrs.stream()
-                .collect(Collectors.toMap(ProductOptionAttribute::getId, attribute -> attribute));
-
-        for (OptionRequest.OptionAttribute attributeRequest : productOptionRequest.getAttributes()) {
-            ProductOptionAttribute productOptionAttribute = oldProductOptionAttributeMap.get(attributeRequest.getId());
-
-            if (Objects.isNull(productOptionAttribute)) {
-                productOptionAttribute = new ProductOptionAttribute();
-                productOptionAttribute.setProductOption(option);
-                productOptionAttribute.setProductOptionId(option.getId());
-                oldAttrs.add(productOptionAttribute);
-            }
-
-            String newImageUrl = fileUtils.autoCompressImageAndSave(attributeRequest.getImage());
-
-            if (StringUtils.hasText(newImageUrl)) {
-                fileUtils.delete(productOptionAttribute.getImage());
-                productOptionAttribute.setImage(newImageUrl);
-            }
-        }
+        oldProductOptions.addAll(newProductOptions);
     }
 
-    private void updateVariants(UpdateProductRequest request, List<ProductOption> productOptionsUpdated) {
-        Integer productId = request.getId();
-        List<Variant> oldVariants = variantRepository.findAllByProductId(productId);
-        Map<Integer, Variant> oldVariantMap = oldVariants.stream()
-                .collect(Collectors.toMap(Variant::getId, variant -> variant));
-        List<UpdateProductRequest.VariantRequest> newVariantRequests = request.getVariants();
-        List<Integer> newVariantIds = newVariantRequests.stream()
-                .map(UpdateProductRequest.VariantRequest::getId)
-                .filter(Objects::nonNull)
-                .toList();
-        List<Variant> variantsToSave = new ArrayList<>();
-        List<Variant> variantsToDelete = oldVariants.stream()
-                .filter(variant -> !newVariantIds.contains(variant.getId()))
-                .toList();
-        List<Integer> variantIdsToDelete = variantsToDelete.stream().map(Variant::getId).toList();
-        Map<Integer, Integer> productOptionIdMap = productOptionsUpdated.stream()
-                .collect(Collectors.toMap(ProductOption::getRefId, ProductOption::getId));
-        List<VariantOption> newVariantOptions = new ArrayList<>();
-
-        for (UpdateProductRequest.VariantRequest variantRequest : newVariantRequests) {
-            Variant variant = oldVariantMap.get(variantRequest.getId());
-
-            if (Objects.isNull(variant)) {
-                variant = new Variant();
-                variant.setProductId(productId);
-            }
-
-            variant.setAttributeId(variantRequest.getAttributeId());
-            variant.setName(variantRequest.getName());
-            variant.setPrice(variantRequest.getPrice());
-            String newOriginalImageUrl = fileUtils.save(variantRequest.getOriginalImage());
-            String newThumbnailUrl = fileUtils.autoCompressImageAndSave(variantRequest.getThumbnail());
-
-            if (StringUtils.hasText(newThumbnailUrl)) {
-                fileUtils.delete(variant.getThumbnailUrl());
-                variant.setThumbnailUrl(newThumbnailUrl);
-            }
-
-            if (StringUtils.hasText(newOriginalImageUrl)) {
-                fileUtils.delete(variant.getOriginalImage());
-                variant.setOriginalImage(newOriginalImageUrl);
-            }
-
-            variant.setProductOptionIds(variantRequest.getProductOptionIds());
-            variantsToSave.add(variant);
-        }
-
-        for (Variant variant : variantsToSave) {
-            for (Integer refOptionId : variant.getProductOptionIds()) {
-                VariantOption variantOption = new VariantOption();
-                variantOption.setVariantId(variant.getId());
-                variantOption.setProductOptionId(productOptionIdMap.get(refOptionId));
-                newVariantOptions.add(variantOption);
-            }
-        }
-
-        variantRepository.saveAll(variantsToSave);
-        variantRepository.deleteAll(variantsToDelete);
-        variantOptionRepository.saveAll(newVariantOptions);
-        variantOptionRepository.deleteAllByVariantIdIn(variantIdsToDelete);
+    private void updateProductOptionValues(ProductOption productOption, UpdateProductRequest.Option request) {
+        List<ProductOptionValue> oldProductOptionValues = productOption.getValues();
+        List<Integer> oldProductOptionValueIds = request.getImages().stream()
+                .map(UpdateProductRequest.Option.OptionValue::getId)
+                .filter(Objects::nonNull).toList();
+        oldProductOptionValues.removeIf(optionValue -> oldProductOptionValueIds.stream()
+            .noneMatch(oldProductOptionValueId -> Objects.equals(oldProductOptionValueId, optionValue.getId()))
+        );
+        List<ProductOptionValue> newProductOptionValues = request.getImages().stream()
+                .filter(optionValue -> Objects.isNull(optionValue.getId()))
+                .map(optionValue -> {
+                    ProductOptionValue newProductOptionValue = new ProductOptionValue();
+                    newProductOptionValue.setProductOption(productOption);
+                    newProductOptionValue.setImage(fileUtils.autoCompressImageAndSave(optionValue.getImage()));
+                    return newProductOptionValue;
+                }).toList();
+        oldProductOptionValues.addAll(newProductOptionValues);
     }
 
     @Override

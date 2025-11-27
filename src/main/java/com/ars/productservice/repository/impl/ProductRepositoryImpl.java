@@ -1,5 +1,6 @@
 package com.ars.productservice.repository.impl;
 
+import com.ars.productservice.constants.ProductConstants;
 import com.ars.productservice.dto.request.product.SearchProductRequest;
 import com.ars.productservice.dto.response.product.ProductDTO;
 import com.ars.productservice.repository.ProductRepositoryCustom;
@@ -25,8 +26,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         String countSql = "SELECT COUNT(*) FROM product p ";
         String querySql = """
             SELECT p.id, p.shop_id as shopId, p.name, p.code, p.price, p.description,
-            p.is_customizable as customizable,
-            p.status, p.thumbnail_url as thumbnailUrl,
+            p.is_customizable as customizable, p.status, p.thumbnail_url as thumbnailUrl,
             p.created_by as createdBy, p.created_date as createdDate
             FROM product p
         """;
@@ -48,6 +48,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         SqlUtils.addEqualCondition(whereConditions, params, "p.shop_id", request.getShopId());
         SqlUtils.addEqualCondition(whereConditions, params, "ppg.product_group_id", request.getGroupId());
         SqlUtils.addEqualCondition(whereConditions, params, "pc.category_id", request.getCategoryId());
+        SqlUtils.addNotEqualCondition(whereConditions, params, "p.status", ProductConstants.Status.DELETED);
         SqlUtils.addEqualCondition(whereConditions, params, "p.status", request.getStatus());
         SqlUtils.addBetweenCondition(whereConditions, params, "p.price", request.getMinPrice(), request.getMaxPrice());
         SqlUtils.addDateTimeCondition(whereConditions, params, request, "p.created_date");

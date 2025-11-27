@@ -32,10 +32,10 @@ public class UpdateProductRequest {
     private boolean customizable;
     private MultipartFile thumbnail;
     private MultipartFile originalImage;
+    private List<ProductImage> productImages = new ArrayList<>();
     private List<@NotNull Integer> categoryIds = new ArrayList<>();
     private List<@NotNull Integer> productGroupIds = new ArrayList<>();
-    private List<@Valid VariantRequest> variants = new ArrayList<>();
-    private List<@Valid OptionRequest> options = new ArrayList<>();
+    private List<@Valid Option> options = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -101,6 +101,14 @@ public class UpdateProductRequest {
         this.originalImage = originalImage;
     }
 
+    public List<ProductImage> getProductImages() {
+        return productImages;
+    }
+
+    public void setProductImages(List<ProductImage> productImages) {
+        this.productImages = productImages;
+    }
+
     public List<Integer> getCategoryIds() {
         return categoryIds;
     }
@@ -117,38 +125,17 @@ public class UpdateProductRequest {
         this.productGroupIds = productGroupIds;
     }
 
-    public List<VariantRequest> getVariants() {
-        return variants;
-    }
-
-    public void setVariants(List<VariantRequest> variants) {
-        this.variants = variants;
-    }
-
-    public List<OptionRequest> getOptions() {
+    public List<Option> getOptions() {
         return options;
     }
 
-    public void setOptions(List<OptionRequest> options) {
+    public void setOptions(List<Option> options) {
         this.options = options;
     }
 
-    public static class VariantRequest {
-        @NotNull
+    public static class ProductImage {
         private Integer id;
-        private MultipartFile thumbnail;
-        private MultipartFile originalImage;
-        @NotBlank
-        @Size(max = 255)
-        private String name;
-
-        @NotNull
-        @DecimalMin("0.0")
-        private BigDecimal price;
-
-        @NotNull
-        private Integer attributeId;
-        private List<@NotNull Integer> productOptionIds = new ArrayList<>();
+        private MultipartFile image;
 
         public Integer getId() {
             return id;
@@ -158,61 +145,21 @@ public class UpdateProductRequest {
             this.id = id;
         }
 
-        public MultipartFile getThumbnail() {
-            return thumbnail;
+        public MultipartFile getImage() {
+            return image;
         }
 
-        public void setThumbnail(MultipartFile thumbnail) {
-            this.thumbnail = thumbnail;
-        }
-
-        public MultipartFile getOriginalImage() {
-            return originalImage;
-        }
-
-        public void setOriginalImage(MultipartFile originalImage) {
-            this.originalImage = originalImage;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public BigDecimal getPrice() {
-            return price;
-        }
-
-        public void setPrice(BigDecimal price) {
-            this.price = price;
-        }
-
-        public Integer getAttributeId() {
-            return attributeId;
-        }
-
-        public void setAttributeId(Integer attributeId) {
-            this.attributeId = attributeId;
-        }
-
-        public List<Integer> getProductOptionIds() {
-            return productOptionIds;
-        }
-
-        public void setProductOptionIds(List<Integer> productOptionIds) {
-            this.productOptionIds = productOptionIds;
+        public void setImage(MultipartFile image) {
+            this.image = image;
         }
     }
 
-    public static class OptionRequest {
+    public static class Option {
         private Integer id;
         @NotBlank
         @Size(max = 100)
         private String name;
-        private List<@Valid OptionAttribute> attributes = new ArrayList<>();
+        private List<@Valid OptionValue> images = new ArrayList<>();
 
         public Integer getId() {
             return id;
@@ -230,15 +177,15 @@ public class UpdateProductRequest {
             this.name = name;
         }
 
-        public List<OptionAttribute> getAttributes() {
-            return attributes;
+        public List<OptionValue> getImages() {
+            return images;
         }
 
-        public void setAttributes(List<OptionAttribute> attributes) {
-            this.attributes = attributes;
+        public void setImages(List<OptionValue> images) {
+            this.images = images;
         }
 
-        public static class OptionAttribute {
+        public static class OptionValue {
             private Integer id;
             private MultipartFile image;
 
