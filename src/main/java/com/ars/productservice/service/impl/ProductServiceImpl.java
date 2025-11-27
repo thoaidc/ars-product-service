@@ -89,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
         List<ProductOptionDTO> productOptionDTOS = product.getOptions().stream().map(productOption -> {
             ProductOptionDTO productOptionDTO = new ProductOptionDTO();
             BeanUtils.copyProperties(productOption, productOptionDTO);
+            productOptionDTO.setProductId(productId);
             return productOptionDTO;
         }).toList();
 
