@@ -119,6 +119,7 @@ app:
       - /login/**
       - /actuator/**
       - /favicon.ico
+      - /uploads/products/**
     external-service-public-request-patterns:
       - /api/p/**
       - /
@@ -179,6 +180,6 @@ app:
         - classpath:/static/
     upload-resource:
       patterns:
-        - /uploads/
+        - /uploads/**
       locations:
-        - /opt/uploads/products/
+        - file:/opt/uploads/
