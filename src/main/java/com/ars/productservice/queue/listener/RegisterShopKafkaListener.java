@@ -26,9 +26,9 @@ public class RegisterShopKafkaListener {
     }
 
     @KafkaListener(
-        topics = BaseKafkaConstants.Topic.REGISTER_SHOP,
-        groupId = BaseKafkaConstants.GroupId.REGISTER_SHOP,
-        concurrency = BaseKafkaConstants.Consumers.REGISTER_SHOP
+        topics = BaseKafkaConstants.Topic.USER_CREATED,
+        groupId = BaseKafkaConstants.GroupId.USER_CREATED,
+        concurrency = BaseKafkaConstants.Consumers.USER_CREATED
     )
     public void receiveMessage(
         @Payload String payload,
