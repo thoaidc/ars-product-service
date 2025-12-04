@@ -2,6 +2,7 @@ package com.ars.productservice.service.impl;
 
 import com.ars.productservice.constants.ExceptionConstants;
 import com.ars.productservice.constants.OutBoxConstants;
+import com.ars.productservice.constants.ShopConstants;
 import com.ars.productservice.dto.mapping.ShopInfoLogin;
 import com.ars.productservice.entity.OutBox;
 import com.ars.productservice.entity.Shop;
@@ -46,6 +47,7 @@ public class ShopServiceImpl implements ShopService {
         shop.setSlug(BaseCommon.normalizeName(shop.getName()));
         shop.setEmail(userCreatedEvent.getEmail());
         shop.setPhone(userCreatedEvent.getPhone());
+        shop.setStatus(ShopConstants.Status.ACTIVE);
         shopRepository.save(shop);
         UserShopCompletionEvent userShopCompletionEvent = UserShopCompletionEvent.builder()
                 .userId(userCreatedEvent.getUserId())

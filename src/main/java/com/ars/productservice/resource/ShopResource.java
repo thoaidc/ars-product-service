@@ -5,9 +5,11 @@ import com.dct.model.dto.response.BaseResponseDTO;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api")
+@RestController
+@RequestMapping("/api")
 public class ShopResource {
     private final ShopService shopService;
 
