@@ -120,6 +120,7 @@ app:
       - /actuator/**
       - /favicon.ico
       - /uploads/products/**
+      - /api/internal/**
     external-service-public-request-patterns:
       - /api/p/**
       - /

@@ -2,6 +2,7 @@ package com.ars.productservice.service.impl;
 
 import com.ars.productservice.constants.ExceptionConstants;
 import com.ars.productservice.constants.OutBoxConstants;
+import com.ars.productservice.dto.mapping.ShopInfoLogin;
 import com.ars.productservice.entity.OutBox;
 import com.ars.productservice.entity.Shop;
 import com.ars.productservice.repository.OutBoxRepository;
@@ -10,6 +11,7 @@ import com.ars.productservice.service.ShopService;
 
 import com.dct.model.common.BaseCommon;
 import com.dct.model.common.JsonUtils;
+import com.dct.model.dto.response.BaseResponseDTO;
 import com.dct.model.event.UserCreatedEvent;
 import com.dct.model.event.UserShopCompletionEvent;
 
@@ -17,6 +19,8 @@ import com.dct.model.event.UserShopFailureEvent;
 import com.dct.model.exception.BaseBadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class ShopServiceImpl implements ShopService {
@@ -72,5 +76,16 @@ public class ShopServiceImpl implements ShopService {
         outBox.setType(OutBoxConstants.Type.REGISTER_USER_WITH_SHOP_FAILURE);
         outBox.setValue(JsonUtils.toJsonString(userShopFailureEvent));
         outBoxRepository.save(outBox);
+    }
+
+    @Override
+    public BaseResponseDTO getShopLoginInfo(Integer userId) {
+        Optional<ShopInfoLogin> shopInfoLoginOptional = shopRepository.findShopInfoLoginByUserId(userId);
+
+        if (shopInfoLoginOptional.isEmpty()) {
+            throw new BaseBadRequestException(ENTITY_NAME, ExceptionConstants.SHOP_EXISTED);
+        }
+
+        return BaseResponseDTO.builder().ok(shopInfoLoginOptional.get());
     }
 }
