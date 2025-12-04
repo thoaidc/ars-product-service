@@ -1,7 +1,6 @@
 package com.ars.productservice.service.impl;
 
 import com.ars.productservice.constants.ExceptionConstants;
-import com.ars.productservice.constants.OutBoxConstants;
 import com.ars.productservice.constants.ShopConstants;
 import com.ars.productservice.dto.mapping.ShopInfoLogin;
 import com.ars.productservice.entity.OutBox;
@@ -12,6 +11,7 @@ import com.ars.productservice.service.ShopService;
 
 import com.dct.model.common.BaseCommon;
 import com.dct.model.common.JsonUtils;
+import com.dct.model.constants.BaseOutBoxConstants;
 import com.dct.model.dto.response.BaseResponseDTO;
 import com.dct.model.event.UserCreatedEvent;
 import com.dct.model.event.UserShopCompletionEvent;
@@ -57,8 +57,8 @@ public class ShopServiceImpl implements ShopService {
                 .build();
         OutBox outBox = new OutBox();
         outBox.setSagaId(userCreatedEvent.getSagaId());
-        outBox.setStatus(OutBoxConstants.Status.PENDING);
-        outBox.setType(OutBoxConstants.Type.REGISTER_USER_WITH_SHOP_COMPLETION);
+        outBox.setStatus(BaseOutBoxConstants.Status.PENDING);
+        outBox.setType(BaseOutBoxConstants.Type.USER_REGISTER_SHOP_COMPLETION);
         outBox.setValue(JsonUtils.toJsonString(userShopCompletionEvent));
         outBoxRepository.save(outBox);
     }
@@ -69,13 +69,13 @@ public class ShopServiceImpl implements ShopService {
         UserShopFailureEvent userShopFailureEvent = UserShopFailureEvent.builder()
                 .userId(userCreatedEvent.getUserId())
                 .sagaId(userCreatedEvent.getSagaId())
-                .errorCode(OutBoxConstants.Type.REGISTER_USER_WITH_SHOP_FAILURE)
+                .errorCode(BaseOutBoxConstants.Type.USER_REGISTER_SHOP_FAILURE)
                 .errorMessage(errorMessage)
                 .build();
         OutBox outBox = new OutBox();
         outBox.setSagaId(userCreatedEvent.getSagaId());
-        outBox.setStatus(OutBoxConstants.Status.PENDING);
-        outBox.setType(OutBoxConstants.Type.REGISTER_USER_WITH_SHOP_FAILURE);
+        outBox.setStatus(BaseOutBoxConstants.Status.PENDING);
+        outBox.setType(BaseOutBoxConstants.Type.USER_REGISTER_SHOP_FAILURE);
         outBox.setValue(JsonUtils.toJsonString(userShopFailureEvent));
         outBoxRepository.save(outBox);
     }

@@ -20,13 +20,13 @@ public class KafkaProducer {
         this.kafkaProperties = kafkaProperties;
     }
 
-    public void sendMessageRegisterShopSuccessfully(String event) {
+    public void sendMessageRegisterShopSuccessful(String event) {
         log.info("[SEND_CREATE_USER_SHOP_COMPLETION_TOPIC] - {}", event);
-        kafkaTemplate.send(kafkaProperties.getTopics().getCreateUserShopCompletion(), event);
+        kafkaTemplate.send(kafkaProperties.getTopics().getUserRegisterShopCompletion(), event);
     }
 
     public void sendMessageRegisterShopFailure(String event) {
         log.error("[SEND_CREATE_USER_SHOP_FAILURE_TOPIC] - {}", event);
-        kafkaTemplate.send(kafkaProperties.getTopics().getCreateUserShopFailure(), event);
+        kafkaTemplate.send(kafkaProperties.getTopics().getUserRegisterShopFailure(), event);
     }
 }

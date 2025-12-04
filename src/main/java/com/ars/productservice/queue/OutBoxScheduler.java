@@ -1,7 +1,7 @@
 package com.ars.productservice.queue;
 
-import com.ars.productservice.constants.OutBoxConstants;
 import com.ars.productservice.service.OutBoxService;
+import com.dct.model.constants.BaseOutBoxConstants;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +15,7 @@ public class OutBoxScheduler {
     }
 
     @Transactional
-    @Scheduled(fixedDelay = OutBoxConstants.DELAY_TIME)
+    @Scheduled(fixedDelay = BaseOutBoxConstants.DELAY_TIME)
     public void sendOutBoxEvent() {
         outBoxService.processOutBoxEvent();
     }
