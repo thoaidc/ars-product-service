@@ -11,4 +11,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, Prod
     @Modifying
     @Query(value = "UPDATE product SET status = ?2 WHERE id = ?1", nativeQuery = true)
     void updateStatusById(Integer productId, String status);
+
+    @Modifying
+    @Query(value = "UPDATE product p SET p.status = :status WHERE p.shop_id = :shopId", nativeQuery = true)
+    void updateStatusByShopId(Integer shopId, String status);
 }

@@ -17,7 +17,7 @@ public class ShopResource {
         this.shopService = shopService;
     }
 
-    @GetMapping("/internal/shop/login-info/{userId}")
+    @GetMapping("/internal/shops/login-info/{userId}")
     public BaseResponseDTO getShopLoginInfo(@PathVariable @NotNull Integer userId) {
         return shopService.getShopLoginInfo(userId);
     }
