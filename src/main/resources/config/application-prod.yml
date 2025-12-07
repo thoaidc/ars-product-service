@@ -123,6 +123,7 @@ app:
       - /api/internal/**
     external-service-public-request-patterns:
       - /api/p/**
+      - /api/internal/**
       - /
 
   http-client:

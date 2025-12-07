@@ -13,6 +13,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, Prod
     void updateStatusById(Integer productId, String status);
 
     @Modifying
-    @Query(value = "UPDATE product p SET p.status = :status WHERE p.shop_id = :shopId", nativeQuery = true)
+    @Query(value = "UPDATE product p SET p.status = ?2 WHERE p.shop_id = ?1", nativeQuery = true)
     void updateStatusByShopId(Integer shopId, String status);
 }

@@ -9,7 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS shop;
 CREATE TABLE shop (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    owner_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(50) UNIQUE NOT NULL,
     description TEXT,

@@ -5,6 +5,8 @@ import com.ars.productservice.constants.ProductConstants;
 import com.ars.productservice.constants.ShopConstants;
 import com.ars.productservice.dto.mapping.ShopInfoLogin;
 import com.ars.productservice.dto.request.shop.UpdateShopRequestDTO;
+import com.ars.productservice.dto.response.shop.ShopDTO;
+import com.ars.productservice.dto.response.shop.ShopOwnerInfo;
 import com.ars.productservice.entity.OutBox;
 import com.ars.productservice.entity.Shop;
 import com.ars.productservice.repository.OutBoxRepository;
@@ -13,6 +15,7 @@ import com.ars.productservice.repository.ShopRepository;
 import com.ars.productservice.service.ShopService;
 
 import com.dct.config.common.FileUtils;
+import com.dct.config.common.HttpClientUtils;
 import com.dct.model.common.BaseCommon;
 import com.dct.model.common.JsonUtils;
 import com.dct.model.constants.BaseOutBoxConstants;
@@ -23,13 +26,21 @@ import com.dct.model.event.UserShopCompletionEvent;
 import com.dct.model.event.UserShopFailureEvent;
 import com.dct.model.exception.BaseBadRequestException;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ShopServiceImpl implements ShopService {
@@ -37,14 +48,20 @@ public class ShopServiceImpl implements ShopService {
     private final ShopRepository shopRepository;
     private final OutBoxRepository outBoxRepository;
     private final ProductRepository productRepository;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
     private final FileUtils fileUtils = new FileUtils();
 
     public ShopServiceImpl(ShopRepository shopRepository,
                            OutBoxRepository outBoxRepository,
-                           ProductRepository productRepository) {
+                           ProductRepository productRepository,
+                           RestTemplate restTemplate,
+                           ObjectMapper objectMapper) {
         this.shopRepository = shopRepository;
         this.outBoxRepository = outBoxRepository;
         this.productRepository = productRepository;
+        this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
         this.fileUtils.setPrefixPath(ProductConstants.Upload.PREFIX);
         this.fileUtils.setUploadDirectory(ProductConstants.Upload.LOCATION);
     }
@@ -56,12 +73,12 @@ public class ShopServiceImpl implements ShopService {
             throw new BaseBadRequestException(ENTITY_NAME, "Missing owner info or shop name");
         }
 
-        if (shopRepository.existsByUserIdAndName(userCreatedEvent.getUserId(), userCreatedEvent.getShopName())) {
+        if (shopRepository.existsByOwnerIdAndName(userCreatedEvent.getUserId(), userCreatedEvent.getShopName())) {
             throw new BaseBadRequestException(ENTITY_NAME, ExceptionConstants.SHOP_EXISTED);
         }
 
         Shop shop = new Shop();
-        shop.setUserId(userCreatedEvent.getUserId());
+        shop.setOwnerId(userCreatedEvent.getUserId());
         shop.setName(userCreatedEvent.getShopName());
         shop.setSlug(BaseCommon.normalizeName(shop.getName()));
         shop.setEmail(userCreatedEvent.getEmail());
@@ -112,7 +129,39 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public BaseResponseDTO getShopWithPaging(BaseRequestDTO requestDTO) {
-        return null;
+        Page<ShopDTO> shopPage = shopRepository.getShopsWithPaging(requestDTO);
+        List<ShopDTO> shops = shopPage.getContent();
+        long totalShops = shopPage.getTotalElements();
+
+        if (totalShops > 0 && !shops.isEmpty()) {
+            List<String> ownerIds = shops.stream().map(shop -> String.valueOf(shop.getOwnerId())).toList();
+            Map<String, List<String>> params = Map.of("ownerIds", ownerIds);
+            BaseResponseDTO responseDTO = HttpClientUtils.builder()
+                    .restTemplate(restTemplate)
+                    .url("http://localhost:8000/api/internal/users/owners-info")
+                    .method(HttpMethod.GET)
+                    .params(params)
+                    .execute(BaseResponseDTO.class);
+            if (Objects.nonNull(responseDTO) && Objects.nonNull(responseDTO.getResult())) {
+                TypeReference<List<ShopOwnerInfo>> typeReference = new TypeReference<>() {};
+                List<ShopOwnerInfo> shopOwnerInfos = objectMapper.convertValue(responseDTO.getResult(), typeReference);
+                Map<Integer, ShopOwnerInfo> shopOwnerInfoMap = shopOwnerInfos.stream().collect(
+                    Collectors.toMap(ShopOwnerInfo::getOwnerId, shopOwnerInfo -> shopOwnerInfo)
+                );
+
+                for (ShopDTO shop : shops) {
+                    ShopOwnerInfo shopOwnerInfo = shopOwnerInfoMap.get(shop.getOwnerId());
+
+                    if (Objects.nonNull(shopOwnerInfo)) {
+                        shop.setOwnerName(shopOwnerInfo.getOwnerName());
+                        shop.setOwnerEmail(shopOwnerInfo.getOwnerEmail());
+                        shop.setOwnerPhone(shopOwnerInfo.getOwnerPhone());
+                    }
+                }
+            }
+        }
+
+        return BaseResponseDTO.builder().total(totalShops).ok(shops);
     }
 
     @Override

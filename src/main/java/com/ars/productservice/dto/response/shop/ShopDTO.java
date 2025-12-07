@@ -1,42 +1,16 @@
-package com.ars.productservice.entity;
+package com.ars.productservice.dto.response.shop;
 
-import com.ars.productservice.dto.response.shop.ShopDTO;
-import com.dct.config.entity.AbstractAuditingEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.ConstructorResult;
-import jakarta.persistence.Entity;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.SqlResultSetMappings;
-import jakarta.persistence.Table;
+import com.dct.model.dto.response.AuditingDTO;
+
 import java.time.Instant;
 
-@Entity
-@Table(name = "shop")
-@SuppressWarnings("unused")
-@SqlResultSetMappings(
-    {
-        @SqlResultSetMapping(
-            name = "shopGetWithPaging",
-            classes = {
-                @ConstructorResult(
-                    targetClass = ShopDTO.class,
-                    columns = {
-                        @ColumnResult(name = "id", type = Integer.class),
-                        @ColumnResult(name = "ownerId", type = Integer.class),
-                        @ColumnResult(name = "name", type = String.class),
-                        @ColumnResult(name = "status", type = String.class),
-                        @ColumnResult(name = "createdDate", type = Instant.class)
-                    }
-                )
-            }
-        )
-    }
-)
-public class Shop extends AbstractAuditingEntity {
-    @Column(name = "owner_id")
-    private Integer ownerId;
+public class ShopDTO extends AuditingDTO {
     private String name;
+    private Integer ownerId;
+    private String ownerName;
+    private String ownerEmail;
+    private String ownerPhone;
+    private String status;
     private String logo;
     private String banner;
     private String description;
@@ -44,10 +18,26 @@ public class Shop extends AbstractAuditingEntity {
     private String email;
     private String phone;
     private String website;
-    private String status;
     private Float rating;
-    @Column(name = "total_sales")
     private Integer totalSales;
+
+    public ShopDTO() {}
+
+    public ShopDTO(Integer id, Integer ownerId, String name, String status, Instant createdDate) {
+        super.setId(id);
+        super.setCreatedDate(createdDate);
+        this.ownerId = ownerId;
+        this.name = name;
+        this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Integer getOwnerId() {
         return ownerId;
@@ -57,12 +47,36 @@ public class Shop extends AbstractAuditingEntity {
         this.ownerId = ownerId;
     }
 
-    public String getName() {
-        return name;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
+    }
+
+    public String getOwnerPhone() {
+        return ownerPhone;
+    }
+
+    public void setOwnerPhone(String ownerPhone) {
+        this.ownerPhone = ownerPhone;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getLogo() {
@@ -119,14 +133,6 @@ public class Shop extends AbstractAuditingEntity {
 
     public void setWebsite(String website) {
         this.website = website;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public Float getRating() {
