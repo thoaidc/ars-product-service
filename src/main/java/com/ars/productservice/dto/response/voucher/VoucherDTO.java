@@ -2,19 +2,14 @@ package com.ars.productservice.dto.response.voucher;
 
 import com.dct.model.dto.response.AuditingDTO;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class VoucherDTO extends AuditingDTO {
     private Integer shopId;
     private String code;
     private Integer type;
-    private Integer scope;
     private Integer status;
     private Integer dateStarted;
     private Integer dateExpired;
     private Float value = 0.00f;
-    private Set<Integer> productApplies = new HashSet<>();
 
     public Integer getShopId() {
         return shopId;
@@ -30,14 +25,6 @@ public class VoucherDTO extends AuditingDTO {
 
     public void setType(Integer type) {
         this.type = type;
-    }
-
-    public Integer getScope() {
-        return scope;
-    }
-
-    public void setScope(Integer scope) {
-        this.scope = scope;
     }
 
     public Integer getStatus() {
@@ -78,13 +65,5 @@ public class VoucherDTO extends AuditingDTO {
 
     public void setValue(Float value) {
         this.value = value;
-    }
-
-    public Set<Integer> getProductApplies() {
-        return productApplies;
-    }
-
-    public void setProductApplies(Set<Integer> productApplies) {
-        this.productApplies = productApplies;
     }
 }

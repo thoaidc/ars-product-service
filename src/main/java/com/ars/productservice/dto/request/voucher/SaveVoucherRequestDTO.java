@@ -3,17 +3,12 @@ package com.ars.productservice.dto.request.voucher;
 import com.ars.productservice.entity.Voucher;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class SaveVoucherRequestDTO {
     private Integer id;
     @NotNull
     private Integer shopId;
     @NotNull
     private Voucher.VoucherType type;
-    @NotNull
-    private Voucher.VoucherScope scope;
     @NotNull
     private Voucher.VoucherStatus status;
     @NotNull
@@ -22,7 +17,6 @@ public class SaveVoucherRequestDTO {
     private Integer dateExpired;
     @NotNull
     private Float value = 0.00f;
-    private Set<@NotNull Integer> productApplies = new HashSet<>();
 
     public Integer getId() {
         return id;
@@ -46,14 +40,6 @@ public class SaveVoucherRequestDTO {
 
     public void setType(Voucher.VoucherType type) {
         this.type = type;
-    }
-
-    public Voucher.VoucherScope getScope() {
-        return scope;
-    }
-
-    public void setScope(Voucher.VoucherScope scope) {
-        this.scope = scope;
     }
 
     public Voucher.VoucherStatus getStatus() {
@@ -94,13 +80,5 @@ public class SaveVoucherRequestDTO {
 
     public void setValue(Float value) {
         this.value = value;
-    }
-
-    public Set<Integer> getProductApplies() {
-        return productApplies;
-    }
-
-    public void setProductApplies(Set<Integer> productApplies) {
-        this.productApplies = productApplies;
     }
 }

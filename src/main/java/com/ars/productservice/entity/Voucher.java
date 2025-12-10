@@ -3,9 +3,6 @@ package com.ars.productservice.entity;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "voucher")
 @SuppressWarnings("unused")
@@ -22,10 +19,6 @@ public class Voucher extends AbstractAuditingEntity {
     private VoucherType type;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "scope", nullable = false)
-    private VoucherScope scope;
-
-    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
     private VoucherStatus status;
 
@@ -38,9 +31,6 @@ public class Voucher extends AbstractAuditingEntity {
     @Column(name = "value", nullable = false, columnDefinition = "FLOAT DEFAULT 0.00")
     private Float value = 0.00f;
 
-    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<VoucherApply> voucherApplies = new ArrayList<>();
-
     public enum VoucherStatus {
         ACTIVE(1),
         INACTIVE(0);
@@ -48,21 +38,6 @@ public class Voucher extends AbstractAuditingEntity {
         private final int value;
 
         VoucherStatus(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-    public enum VoucherScope {
-        ORDER_WIDE(1),
-        PRODUCT_SPECIFIC(2);
-
-        private final int value;
-
-        VoucherScope(int value) {
             this.value = value;
         }
 
@@ -102,14 +77,6 @@ public class Voucher extends AbstractAuditingEntity {
         this.type = type;
     }
 
-    public VoucherScope getScope() {
-        return scope;
-    }
-
-    public void setScope(VoucherScope scope) {
-        this.scope = scope;
-    }
-
     public String getCode() {
         return code;
     }
@@ -140,13 +107,5 @@ public class Voucher extends AbstractAuditingEntity {
 
     public void setValue(Float value) {
         this.value = value;
-    }
-
-    public List<VoucherApply> getVoucherApplies() {
-        return voucherApplies;
-    }
-
-    public void setVoucherApplies(List<VoucherApply> voucherApplies) {
-        this.voucherApplies = voucherApplies;
     }
 }
