@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ShopRepository extends JpaRepository<Shop, Integer>, ShopRepositoryCustom {
-    @Query(value = "SELECT s.name as shopName, s.id as shopId FROM shop s WHERE s.user_id = ?", nativeQuery = true)
-    Optional<ShopInfoLogin> findShopInfoLoginByUserId(Integer userId);
+    @Query(value = "SELECT s.name as shopName, s.id as shopId FROM shop s WHERE s.owner_id = ?", nativeQuery = true)
+    Optional<ShopInfoLogin> findShopInfoLoginByOwnerId(Integer ownerId);
 
     @Modifying
     @Query(value = "UPDATE shop SET status = ?2 WHERE id = ?1", nativeQuery = true)

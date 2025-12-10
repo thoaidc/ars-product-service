@@ -7,6 +7,7 @@ import com.ars.productservice.dto.request.product.UpdateProductRequest;
 import com.ars.productservice.dto.response.category.CategoryDTO;
 import com.ars.productservice.dto.response.product.ProductDTO;
 import com.ars.productservice.dto.response.product.ProductGroupDTO;
+import com.ars.productservice.dto.response.product.ProductImageDTO;
 import com.ars.productservice.dto.response.product.ProductOptionDTO;
 import com.ars.productservice.entity.Category;
 import com.ars.productservice.entity.Product;
@@ -84,7 +85,13 @@ public class ProductServiceImpl implements ProductService {
         Product product = productOptional.get();
         ProductDTO productDTO = new ProductDTO();
         BeanUtils.copyProperties(product, productDTO, "images", "options", "categories", "productGroups");
-        productDTO.setImages(product.getImages().stream().map(ProductImage::getImage).toList());
+
+        List<ProductImageDTO> productImageDTOS = product.getImages().stream().map(productImage -> {
+            ProductImageDTO productImageDTO = new ProductImageDTO();
+            productImageDTO.setId(productImage.getId());
+            productImageDTO.setImage(productImage.getImage());
+            return productImageDTO;
+        }).toList();
 
         List<ProductOptionDTO> productOptionDTOS = product.getOptions().stream().map(productOption -> {
             ProductOptionDTO productOptionDTO = new ProductOptionDTO();
@@ -105,6 +112,7 @@ public class ProductServiceImpl implements ProductService {
             return productGroupDTO;
         }).toList();
 
+        productDTO.setImages(productImageDTOS);
         productDTO.setCategories(categoryDTOS);
         productDTO.setProductGroups(productGroupDTOS);
         productDTO.setProductOptions(productOptionDTOS);

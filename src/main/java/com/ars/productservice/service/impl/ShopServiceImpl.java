@@ -118,7 +118,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public BaseResponseDTO getShopLoginInfo(Integer userId) {
-        Optional<ShopInfoLogin> shopInfoLoginOptional = shopRepository.findShopInfoLoginByUserId(userId);
+        Optional<ShopInfoLogin> shopInfoLoginOptional = shopRepository.findShopInfoLoginByOwnerId(userId);
 
         if (shopInfoLoginOptional.isEmpty()) {
             throw new BaseBadRequestException(ENTITY_NAME, ExceptionConstants.SHOP_EXISTED);
