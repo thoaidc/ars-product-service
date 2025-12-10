@@ -68,6 +68,43 @@ CREATE TABLE shop_package_subscription (
 
 
 -- ============================
+-- TABLE: voucher
+-- ============================
+DROP TABLE IF EXISTS voucher;
+CREATE TABLE voucher (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    shop_id INT NOT NULL,
+    type INT NOT NULL, -- 1: by value, 2: by percentage
+    scope INT NOT NULL, -- 1: apply for orders, 2: apply for products
+    status INT NOT NULL, -- 1: active, 2: inactive
+    code VARCHAR(20) NOT NULL UNIQUE,
+    date_started INT,
+    date_expired INT,
+    value FLOAT DEFAULT 0.00 NOT NULL,
+    created_by VARCHAR(50),
+    last_modified_by VARCHAR(50),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================
+-- TABLE: voucher_apply
+-- ============================
+DROP TABLE IF EXISTS voucher_apply;
+CREATE TABLE voucher_apply (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    shop_id INT NOT NULL,
+    voucher_id INT NOT NULL,
+    product_id INT NOT NULL,
+    created_by VARCHAR(50),
+    last_modified_by VARCHAR(50),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================
 -- TABLE: outbox
 -- ============================
 DROP TABLE IF EXISTS outbox;
