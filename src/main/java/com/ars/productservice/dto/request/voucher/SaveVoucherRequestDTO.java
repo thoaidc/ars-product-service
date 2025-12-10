@@ -3,6 +3,8 @@ package com.ars.productservice.dto.request.voucher;
 import com.ars.productservice.entity.Voucher;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
+
 public class SaveVoucherRequestDTO {
     private Integer id;
     @NotNull
@@ -16,7 +18,7 @@ public class SaveVoucherRequestDTO {
     private Integer dateStarted;
     private Integer dateExpired;
     @NotNull
-    private Float value = 0.00f;
+    private BigDecimal value = BigDecimal.ZERO;
 
     public Integer getId() {
         return id;
@@ -74,11 +76,11 @@ public class SaveVoucherRequestDTO {
         this.dateExpired = dateExpired;
     }
 
-    public Float getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 
-    public void setValue(Float value) {
+    public void setValue(BigDecimal value) {
         this.value = value;
     }
 }

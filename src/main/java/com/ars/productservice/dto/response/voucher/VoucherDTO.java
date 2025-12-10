@@ -2,6 +2,8 @@ package com.ars.productservice.dto.response.voucher;
 
 import com.dct.model.dto.response.AuditingDTO;
 
+import java.math.BigDecimal;
+
 public class VoucherDTO extends AuditingDTO {
     private Integer shopId;
     private String code;
@@ -9,7 +11,7 @@ public class VoucherDTO extends AuditingDTO {
     private Integer status;
     private Integer dateStarted;
     private Integer dateExpired;
-    private Float value = 0.00f;
+    private BigDecimal value = BigDecimal.ZERO;
 
     public Integer getShopId() {
         return shopId;
@@ -59,11 +61,11 @@ public class VoucherDTO extends AuditingDTO {
         this.dateExpired = dateExpired;
     }
 
-    public Float getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 
-    public void setValue(Float value) {
+    public void setValue(BigDecimal value) {
         this.value = value;
     }
 }

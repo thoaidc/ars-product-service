@@ -3,6 +3,8 @@ package com.ars.productservice.entity;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "voucher")
 @SuppressWarnings("unused")
@@ -28,8 +30,8 @@ public class Voucher extends AbstractAuditingEntity {
     @Column(name = "date_expired")
     private Integer dateExpired;
 
-    @Column(name = "value", nullable = false, columnDefinition = "FLOAT DEFAULT 0.00")
-    private Float value = 0.00f;
+    @Column(name = "value", nullable = false)
+    private BigDecimal value = BigDecimal.ZERO;
 
     public enum VoucherStatus {
         ACTIVE(1),
@@ -101,11 +103,19 @@ public class Voucher extends AbstractAuditingEntity {
         this.dateExpired = dateExpired;
     }
 
-    public Float getValue() {
+    public VoucherStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(VoucherStatus status) {
+        this.status = status;
+    }
+
+    public BigDecimal getValue() {
         return value;
     }
 
-    public void setValue(Float value) {
+    public void setValue(BigDecimal value) {
         this.value = value;
     }
 }

@@ -79,31 +79,13 @@ CREATE TABLE voucher (
     code VARCHAR(20) NOT NULL UNIQUE,
     date_started INT,
     date_expired INT,
-    value FLOAT DEFAULT 0.00 NOT NULL,
+    value DECIMAL(21,6) DEFAULT 0.00 NOT NULL,
     created_by VARCHAR(50),
     last_modified_by VARCHAR(50),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ============================
--- TABLE: outbox
--- ============================
-DROP TABLE IF EXISTS outbox;
-CREATE TABLE outbox (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    saga_id VARCHAR(100) NOT NULL,
-    type VARCHAR(100) NOT NULL,
-    value VARCHAR(1000) NOT NULL,
-    status VARCHAR(20) DEFAULT 'PENDING',
-    created_by VARCHAR(50),
-    last_modified_by VARCHAR(50),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE INDEX idx_outbox_type_status_id ON outbox (type, status, id DESC);
-CREATE INDEX idx_outbox_status_id ON outbox (status, id DESC);
 
 -- ============================
 -- TABLE: product
@@ -124,8 +106,8 @@ CREATE TABLE product
     normalized_name    VARCHAR(255),
     created_by         VARCHAR(50),
     last_modified_by   VARCHAR(50),
-    created_date       TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
-    last_modified_date TIMESTAMP               DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 
@@ -277,5 +259,26 @@ CREATE TABLE product_option_value
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 CREATE INDEX idx_poa_po ON product_option_value (product_option_id);
+
+
+-- ============================
+-- TABLE: outbox
+-- ============================
+DROP TABLE IF EXISTS outbox;
+CREATE TABLE outbox (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    saga_id VARCHAR(100) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    value VARCHAR(1000) NOT NULL,
+    status VARCHAR(20) DEFAULT 'PENDING',
+    created_by VARCHAR(50),
+    last_modified_by VARCHAR(50),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_outbox_type_status_id ON outbox (type, status, id DESC);
+CREATE INDEX idx_outbox_status_id ON outbox (status, id DESC);
+
 
 SET FOREIGN_KEY_CHECKS = 1;
