@@ -1,10 +1,14 @@
 package com.ars.productservice.service.impl;
 
 import com.ars.productservice.constants.ProductConstants;
+import com.ars.productservice.dto.mapping.ProductCheckOrderInfo;
+import com.ars.productservice.dto.mapping.VoucherCheckOrderInfo;
+import com.ars.productservice.dto.request.product.CheckOrderInfoRequestDTO;
 import com.ars.productservice.dto.request.product.CreateProductRequest;
 import com.ars.productservice.dto.request.product.SearchProductRequest;
 import com.ars.productservice.dto.request.product.UpdateProductRequest;
 import com.ars.productservice.dto.response.category.CategoryDTO;
+import com.ars.productservice.dto.response.product.CheckOrderInfoResponseDTO;
 import com.ars.productservice.dto.response.product.ProductDTO;
 import com.ars.productservice.dto.response.product.ProductGroupDTO;
 import com.ars.productservice.dto.response.product.ProductImageDTO;
@@ -22,6 +26,7 @@ import com.ars.productservice.repository.ProductCategoryRepository;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.repository.ProductProductGroupRepository;
 import com.ars.productservice.repository.ProductRepository;
+import com.ars.productservice.repository.VoucherRepository;
 import com.ars.productservice.service.ProductService;
 
 import com.dct.config.common.FileUtils;
@@ -51,12 +56,13 @@ public class ProductServiceImpl implements ProductService {
     private final ProductGroupRepository productGroupRepository;
     private final ProductProductGroupRepository productProductGroupRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final VoucherRepository voucherRepository;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
                               ProductGroupRepository productGroupRepository,
                               ProductProductGroupRepository productProductGroupRepository,
-                              ProductCategoryRepository productCategoryRepository) {
+                              ProductCategoryRepository productCategoryRepository, VoucherRepository voucherRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productGroupRepository = productGroupRepository;
@@ -64,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
         this.productCategoryRepository = productCategoryRepository;
         this.fileUtils.setPrefixPath(ProductConstants.Upload.PREFIX);
         this.fileUtils.setUploadDirectory(ProductConstants.Upload.LOCATION);
+        this.voucherRepository = voucherRepository;
     }
 
     @Override
@@ -117,6 +124,16 @@ public class ProductServiceImpl implements ProductService {
         productDTO.setProductGroups(productGroupDTOS);
         productDTO.setProductOptions(productOptionDTOS);
         return BaseResponseDTO.builder().ok(productDTO);
+    }
+
+    @Override
+    public BaseResponseDTO checkOrderInfo(CheckOrderInfoRequestDTO request) {
+        List<ProductCheckOrderInfo> products = productRepository.findOrderProductRequest(request.getProductIds());
+        List<VoucherCheckOrderInfo> vouchers = voucherRepository.findVouchersForOrderRequest(request.getVoucherIds());
+        CheckOrderInfoResponseDTO checkOrderInfoResponse = new CheckOrderInfoResponseDTO();
+        checkOrderInfoResponse.setProducts(products);
+        checkOrderInfoResponse.setVouchers(vouchers);
+        return BaseResponseDTO.builder().ok(checkOrderInfoResponse);
     }
 
     @Override

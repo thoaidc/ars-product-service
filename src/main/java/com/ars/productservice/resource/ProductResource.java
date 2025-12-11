@@ -1,5 +1,6 @@
 package com.ars.productservice.resource;
 
+import com.ars.productservice.dto.request.product.CheckOrderInfoRequestDTO;
 import com.ars.productservice.dto.request.product.CreateProductRequest;
 import com.ars.productservice.dto.request.product.SearchProductRequest;
 import com.ars.productservice.dto.request.product.UpdateProductRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +40,11 @@ public class ProductResource {
     @GetMapping("/p/v1/products/{productId}")
     public BaseResponseDTO getProductDetail(@PathVariable Integer productId) {
         return productService.getDetail(productId);
+    }
+
+    @PostMapping("/internal/products/check-order-info")
+    public BaseResponseDTO checkOrderInfoRequest(@Valid @RequestBody CheckOrderInfoRequestDTO requestDTO) {
+        return productService.checkOrderInfo(requestDTO);
     }
 
     @PostMapping("/v1/products")
