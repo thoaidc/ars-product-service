@@ -1,6 +1,7 @@
 package com.ars.productservice.dto.request.voucher;
 
 import com.ars.productservice.entity.Voucher;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -13,7 +14,9 @@ public class SaveVoucherRequestDTO {
     private Voucher.VoucherType type;
     @NotNull
     private Voucher.VoucherStatus status;
-    @NotNull
+    @NotBlank
+    private String name;
+    @NotBlank
     private String code;
     private Integer dateStarted;
     private Integer dateExpired;
@@ -50,6 +53,14 @@ public class SaveVoucherRequestDTO {
 
     public void setStatus(Voucher.VoucherStatus status) {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getCode() {

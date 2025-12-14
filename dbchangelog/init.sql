@@ -77,6 +77,7 @@ CREATE TABLE voucher (
     type INT NOT NULL, -- 1: by value, 2: by percentage
     status INT NOT NULL, -- 1: active, 2: inactive
     code VARCHAR(20) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
     date_started INT,
     date_expired INT,
     value DECIMAL(21,6) DEFAULT 0.00 NOT NULL,
