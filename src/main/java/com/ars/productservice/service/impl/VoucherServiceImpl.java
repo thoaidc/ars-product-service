@@ -1,5 +1,6 @@
 package com.ars.productservice.service.impl;
 
+import com.ars.productservice.constants.VoucherConstants;
 import com.ars.productservice.dto.request.voucher.SaveVoucherRequestDTO;
 import com.ars.productservice.dto.request.voucher.SearchVoucherRequest;
 import com.ars.productservice.dto.response.voucher.VoucherDTO;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,34 +51,55 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    @Transactional
-    public BaseResponseDTO saveVoucher(SaveVoucherRequestDTO request) {
-        Voucher voucher;
+    public BaseResponseDTO createVoucher(SaveVoucherRequestDTO request) {
         String nowStr = DateUtils.now().toString(BaseDatetimeConstants.Formatter.YYYY_MM_DD_NORMALIZED);
         int now = Integer.parseInt(nowStr);
         Integer dateStarted = Optional.ofNullable(request.getDateStarted()).orElse(now);
         Integer dateExpired = request.getDateExpired();
 
-        if (Objects.nonNull(request.getId())) {
-            voucher = voucherRepository.findById(request.getId()).orElse(null);
+        if (dateStarted < now) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Invalid voucher started date");
+        }
 
-            if (Objects.isNull(voucher)) {
-                throw new BaseBadRequestException(ENTITY_NAME, "Voucher does not exists");
-            }
+        if (dateExpired != null && (dateExpired < now || dateExpired < dateStarted)) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Invalid voucher expired date");
+        }
 
-            if (!Objects.equals(request.getDateStarted(), voucher.getDateStarted())) {
-                throw new BaseBadRequestException(ENTITY_NAME, "Voucher date started must not be update");
+        if (Objects.equals(request.getType(), VoucherConstants.Type.BY_PERCENTAGE)) {
+            if (BigDecimal.valueOf(100).compareTo(request.getValue()) < 0) {
+                throw new BaseBadRequestException(ENTITY_NAME, "Invalid voucher value");
             }
-        } else {
-            if (voucherRepository.existsByShopIdAndCode(request.getShopId(), request.getCode())) {
-                throw new BaseBadRequestException(ENTITY_NAME, "Voucher existed");
-            }
+        }
 
-            if (dateStarted < now) {
-                throw new BaseBadRequestException(ENTITY_NAME, "Invalid voucher started date");
-            }
+        if (voucherRepository.existsByShopIdAndCode(request.getShopId(), request.getCode())) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Voucher existed");
+        }
 
-            voucher = new Voucher();
+        Voucher voucher = new Voucher();
+        BeanUtils.copyProperties(request, voucher, "id");
+        return BaseResponseDTO.builder().ok(voucherRepository.save(voucher));
+    }
+
+    @Override
+    public BaseResponseDTO updateVoucher(SaveVoucherRequestDTO request) {
+        Voucher voucher = voucherRepository.findById(request.getId()).orElse(null);
+        String nowStr = DateUtils.now().toString(BaseDatetimeConstants.Formatter.YYYY_MM_DD_NORMALIZED);
+        int now = Integer.parseInt(nowStr);
+        Integer dateStarted = Optional.ofNullable(request.getDateStarted()).orElse(now);
+        Integer dateExpired = request.getDateExpired();
+
+        if (Objects.isNull(voucher)) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Voucher does not exists");
+        }
+
+        if (Objects.equals(request.getType(), VoucherConstants.Type.BY_PERCENTAGE)) {
+            if (BigDecimal.valueOf(100).compareTo(request.getValue()) < 0) {
+                throw new BaseBadRequestException(ENTITY_NAME, "Invalid voucher value");
+            }
+        }
+
+        if (!Objects.equals(request.getDateStarted(), voucher.getDateStarted())) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Voucher date started must not be update");
         }
 
         if (dateExpired != null && (dateExpired < now || dateExpired < dateStarted)) {

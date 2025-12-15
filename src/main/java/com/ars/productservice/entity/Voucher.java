@@ -7,8 +7,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ColumnResult;
 import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
@@ -55,13 +53,11 @@ public class Voucher extends AbstractAuditingEntity {
     @Column(name = "code", nullable = false, unique = true, length = 20)
     private String code;
 
-    @Enumerated(EnumType.ORDINAL)
     @Column(name = "type", nullable = false)
-    private VoucherType type;
+    private Integer type;
 
-    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private VoucherStatus status;
+    private Integer status;
 
     @Column(name = "date_started")
     private Integer dateStarted;
@@ -71,36 +67,6 @@ public class Voucher extends AbstractAuditingEntity {
 
     @Column(name = "value", nullable = false)
     private BigDecimal value = BigDecimal.ZERO;
-
-    public enum VoucherStatus {
-        ACTIVE(1),
-        INACTIVE(0);
-
-        private final int value;
-
-        VoucherStatus(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-    public enum VoucherType {
-        BY_VALUE(1),
-        BY_PERCENTAGE(2);
-
-        private final int value;
-
-        VoucherType(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
 
     public Integer getShopId() {
         return shopId;
@@ -116,14 +82,6 @@ public class Voucher extends AbstractAuditingEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public VoucherType getType() {
-        return type;
-    }
-
-    public void setType(VoucherType type) {
-        this.type = type;
     }
 
     public String getCode() {
@@ -150,12 +108,20 @@ public class Voucher extends AbstractAuditingEntity {
         this.dateExpired = dateExpired;
     }
 
-    public VoucherStatus getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(VoucherStatus status) {
+    public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public BigDecimal getValue() {

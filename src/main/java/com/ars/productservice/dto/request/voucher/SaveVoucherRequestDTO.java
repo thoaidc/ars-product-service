@@ -1,6 +1,5 @@
 package com.ars.productservice.dto.request.voucher;
 
-import com.ars.productservice.entity.Voucher;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,9 +10,9 @@ public class SaveVoucherRequestDTO {
     @NotNull
     private Integer shopId;
     @NotNull
-    private Voucher.VoucherType type;
+    private Integer type;
     @NotNull
-    private Voucher.VoucherStatus status;
+    private Integer status;
     @NotBlank
     private String name;
     @NotBlank
@@ -39,19 +38,19 @@ public class SaveVoucherRequestDTO {
         this.shopId = shopId;
     }
 
-    public Voucher.VoucherType getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Voucher.VoucherType type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 
-    public Voucher.VoucherStatus getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Voucher.VoucherStatus status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

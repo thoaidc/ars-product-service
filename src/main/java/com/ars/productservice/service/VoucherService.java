@@ -7,6 +7,7 @@ import com.dct.model.dto.response.BaseResponseDTO;
 public interface VoucherService {
     BaseResponseDTO getVoucherWithPaging(SearchVoucherRequest request);
     BaseResponseDTO getVoucherDetail(Integer voucherId);
-    BaseResponseDTO saveVoucher(SaveVoucherRequestDTO request);
+    BaseResponseDTO createVoucher(SaveVoucherRequestDTO request);
+    BaseResponseDTO updateVoucher(SaveVoucherRequestDTO request);
     BaseResponseDTO deleteVoucher(Integer voucherId);
 }

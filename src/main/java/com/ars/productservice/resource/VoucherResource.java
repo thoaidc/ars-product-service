@@ -4,12 +4,14 @@ import com.ars.productservice.dto.request.voucher.SaveVoucherRequestDTO;
 import com.ars.productservice.dto.request.voucher.SearchVoucherRequest;
 import com.ars.productservice.service.VoucherService;
 import com.dct.model.dto.response.BaseResponseDTO;
+
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,8 +36,13 @@ public class VoucherResource {
     }
 
     @PostMapping("/v1/vouchers")
-    public BaseResponseDTO saveVoucher(@Valid @RequestBody SaveVoucherRequestDTO requestDTO) {
-        return voucherService.saveVoucher(requestDTO);
+    public BaseResponseDTO createVoucher(@Valid @RequestBody SaveVoucherRequestDTO requestDTO) {
+        return voucherService.createVoucher(requestDTO);
+    }
+
+    @PutMapping("/v1/vouchers")
+    public BaseResponseDTO updateVoucher(@Valid @RequestBody SaveVoucherRequestDTO requestDTO) {
+        return voucherService.updateVoucher(requestDTO);
     }
 
     @DeleteMapping("/v1/vouchers/{voucherId}")
