@@ -11,14 +11,9 @@ public class ShopDTO extends AuditingDTO {
     private String ownerEmail;
     private String ownerPhone;
     private String status;
-    private String logo;
-    private String banner;
     private String description;
-    private String slug;
     private String email;
     private String phone;
-    private String website;
-    private Float rating;
     private Integer totalSales;
 
     public ShopDTO() {}
@@ -79,36 +74,12 @@ public class ShopDTO extends AuditingDTO {
         this.status = status;
     }
 
-    public String getLogo() {
-        return logo;
-    }
-
-    public void setLogo(String logo) {
-        this.logo = logo;
-    }
-
-    public String getBanner() {
-        return banner;
-    }
-
-    public void setBanner(String banner) {
-        this.banner = banner;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
     }
 
     public String getEmail() {
@@ -125,22 +96,6 @@ public class ShopDTO extends AuditingDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public Float getRating() {
-        return rating;
-    }
-
-    public void setRating(Float rating) {
-        this.rating = rating;
     }
 
     public Integer getTotalSales() {

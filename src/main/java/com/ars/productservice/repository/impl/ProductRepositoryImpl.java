@@ -27,7 +27,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         String querySql = """
             SELECT p.id, p.shop_id as shopId, p.name, p.code, p.price, p.description,
             p.is_customizable as customizable, p.status, p.thumbnail_url as thumbnailUrl,
-            p.created_by as createdBy, p.created_date as createdDate
+            p.total_sales as totalSales, p.created_by as createdBy, p.created_date as createdDate
             FROM product p
         """;
 

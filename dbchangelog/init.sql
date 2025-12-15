@@ -11,55 +11,11 @@ CREATE TABLE shop (
     id INT AUTO_INCREMENT PRIMARY KEY,
     owner_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
-    slug VARCHAR(50) UNIQUE NOT NULL,
     description TEXT,
-    logo VARCHAR(255),
-    banner VARCHAR(255),
     email VARCHAR(255),
     phone VARCHAR(50),
-    website VARCHAR(255),
     status VARCHAR(20) DEFAULT 'ACTIVE',
-    rating FLOAT DEFAULT 0.00,
     total_sales INT DEFAULT 0,
-    created_by VARCHAR(50),
-    last_modified_by VARCHAR(50),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- ============================
--- TABLE: package
--- ============================
-DROP TABLE IF EXISTS package;
-CREATE TABLE package (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(100) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(500),
-    price DECIMAL(21,6) DEFAULT 0.00,
-    timeframe INT DEFAULT 0,
-    created_by VARCHAR(50),
-    last_modified_by VARCHAR(50),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- ============================
--- TABLE: shop_package_subscription
--- ============================
-DROP TABLE IF EXISTS shop_package_subscription;
-CREATE TABLE shop_package_subscription (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    shop_id INT NOT NULL,
-    package_id INT NOT NULL,
-    package_code VARCHAR(100) NOT NULL,
-    package_name VARCHAR(255) NOT NULL,
-    package_price DECIMAL(21,6) DEFAULT 0.00 NOT NULL,
-    date_started TIMESTAMP NOT NULL,
-    date_expired TIMESTAMP NOT NULL,
     created_by VARCHAR(50),
     last_modified_by VARCHAR(50),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -104,7 +60,7 @@ CREATE TABLE product
     status             VARCHAR(20)    NOT NULL,
     thumbnail_url      VARCHAR(255),
     original_image     VARCHAR(255),
-    normalized_name    VARCHAR(255),
+    total_sales        INT NOT NULL,
     created_by         VARCHAR(50),
     last_modified_by   VARCHAR(50),
     created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

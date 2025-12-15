@@ -28,6 +28,7 @@ import java.util.List;
                         @ColumnResult(name = "customizable", type = Boolean.class),
                         @ColumnResult(name = "status", type = String.class),
                         @ColumnResult(name = "thumbnailUrl", type = String.class),
+                        @ColumnResult(name = "totalSales", type = Integer.class),
                         @ColumnResult(name = "createdBy", type = String.class),
                         @ColumnResult(name = "createdDate", type = Instant.class)
                     }
@@ -66,8 +67,8 @@ public class Product extends AbstractAuditingEntity {
     @Column(name = "original_image")
     private String originalImage;
 
-    @Column(name = "normalized_name")
-    private String normalizedName;
+    @Column(name = "total_sales")
+    private Integer totalSales;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<ProductImage> images = new ArrayList<>();
@@ -171,12 +172,12 @@ public class Product extends AbstractAuditingEntity {
         this.originalImage = originalImage;
     }
 
-    public String getNormalizedName() {
-        return normalizedName;
+    public Integer getTotalSales() {
+        return totalSales;
     }
 
-    public void setNormalizedName(String normalizedName) {
-        this.normalizedName = normalizedName;
+    public void setTotalSales(Integer totalSales) {
+        this.totalSales = totalSales;
     }
 
     public List<ProductImage> getImages() {

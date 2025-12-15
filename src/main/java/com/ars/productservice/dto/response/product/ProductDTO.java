@@ -17,6 +17,7 @@ public class ProductDTO extends AuditingDTO {
     private Boolean customizable;
     private String status;
     private String thumbnailUrl;
+    private Integer totalSales;
     private List<ProductImageDTO> images = new ArrayList<>();
     private List<CategoryDTO> categories = new ArrayList<>();
     private List<ProductGroupDTO> productGroups = new ArrayList<>();
@@ -34,6 +35,7 @@ public class ProductDTO extends AuditingDTO {
         Boolean customizable,
         String status,
         String thumbnailUrl,
+        Integer totalSales,
         String createdBy,
         Instant createdDate
     ) {
@@ -46,6 +48,7 @@ public class ProductDTO extends AuditingDTO {
         this.customizable = customizable;
         this.status = status;
         this.thumbnailUrl = thumbnailUrl;
+        this.totalSales = totalSales;
     }
 
     public Integer getShopId() {
@@ -110,6 +113,14 @@ public class ProductDTO extends AuditingDTO {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public Integer getTotalSales() {
+        return totalSales;
+    }
+
+    public void setTotalSales(Integer totalSales) {
+        this.totalSales = totalSales;
     }
 
     public List<ProductImageDTO> getImages() {
