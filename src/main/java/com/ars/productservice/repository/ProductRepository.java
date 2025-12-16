@@ -23,6 +23,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, Prod
             SELECT p.id, p.shop_id as shopId, p.name, p.code, p.price, p.status, p.thumbnail_url as thumbnailUrl
             FROM product p
             WHERE p.id IN ?1
+            AND p.status = 'INACTIVE'
         """,
         nativeQuery = true
     )

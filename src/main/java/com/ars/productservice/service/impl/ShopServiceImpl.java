@@ -160,7 +160,29 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public BaseResponseDTO getShopDetail(Integer shopId) {
-        return null;
+        Optional<Shop> shopOptional = shopRepository.findById(shopId);
+
+        if (shopOptional.isEmpty()) {
+            throw new BaseBadRequestException(ENTITY_NAME, ExceptionConstants.SHOP_NOT_EXISTED);
+        }
+
+        Shop shop = shopOptional.get();
+        ShopDTO shopDTO = new ShopDTO();
+        BeanUtils.copyProperties(shop, shopDTO);
+        BaseResponseDTO responseDTO = HttpClientUtils.builder()
+                .restTemplate(restTemplate)
+                .url("http://localhost:8000/api/internal/users/owners-info/" + shop.getOwnerId())
+                .method(HttpMethod.GET)
+                .execute(BaseResponseDTO.class);
+
+        if (Objects.nonNull(responseDTO) && Objects.nonNull(responseDTO.getResult())) {
+            ShopOwnerInfo shopOwnerInfo = JsonUtils.convertValue(responseDTO.getResult(), ShopOwnerInfo.class);
+            shopDTO.setOwnerName(shopOwnerInfo.getOwnerName());
+            shopDTO.setOwnerEmail(shopOwnerInfo.getOwnerEmail());
+            shopDTO.setOwnerPhone(shopOwnerInfo.getOwnerPhone());
+        }
+
+        return BaseResponseDTO.builder().ok(shopDTO);
     }
 
     @Override
