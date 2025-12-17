@@ -219,6 +219,26 @@ CREATE INDEX idx_poa_po ON product_option_value (product_option_id);
 
 
 -- ============================
+-- TABLE: review
+-- ============================
+DROP TABLE IF EXISTS review;
+CREATE TABLE review
+(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    content INT NOT NULL,
+    image VARCHAR(255),
+    customer_name VARCHAR(255),
+    customer_id INT NOT NULL,
+    shop_id INT NOT NULL,
+    created_by         VARCHAR(50),
+    last_modified_by   VARCHAR(50),
+    created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+
+-- ============================
 -- TABLE: outbox
 -- ============================
 DROP TABLE IF EXISTS outbox;
