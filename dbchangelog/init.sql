@@ -226,7 +226,7 @@ CREATE TABLE review
 (
     id INT PRIMARY KEY AUTO_INCREMENT,
     product_id INT NOT NULL,
-    content INT NOT NULL,
+    content VARCHAR(500) NOT NULL,
     image VARCHAR(255),
     customer_name VARCHAR(255),
     customer_id INT NOT NULL,
