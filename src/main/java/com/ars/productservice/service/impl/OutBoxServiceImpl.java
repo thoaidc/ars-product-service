@@ -29,24 +29,27 @@ public class OutBoxServiceImpl implements OutBoxService {
     @Transactional
     public void processOutBoxEvent() {
         List<OutBox> outBoxes = outBoxRepository.findTopOutBoxesByStatus(BaseOutBoxConstants.Status.PENDING);
-
-        for (OutBox outBox : outBoxes) {
-            if (Objects.nonNull(outBox)) {
-                log.info("[SEND_EVENT_FROM_OUTBOX] - sagaId: {}, type: {}, content: {}",
-                    outBox.getSagaId(), outBox.getType(), outBox.getValue()
-                );
-
-                switch (outBox.getType()) {
-                    case BaseOutBoxConstants.Type.USER_REGISTER_SHOP_COMPLETION ->
-                            kafkaProducer.sendMessageRegisterShopSuccessful(outBox.getValue());
-                    case BaseOutBoxConstants.Type.USER_REGISTER_SHOP_FAILURE ->
-                            kafkaProducer.sendMessageRegisterShopFailure(outBox.getValue());
-                }
-
-                outBox.setStatus(BaseOutBoxConstants.Status.COMPLETION);
-            }
-        }
-
+        outBoxes = outBoxes.stream().filter(Objects::nonNull).toList();
+        outBoxes.forEach(this::sendOutBoxMessage);
         outBoxRepository.saveAll(outBoxes);
+    }
+
+    private void sendOutBoxMessage(OutBox outBox) {
+        log.info("[SEND_EVENT_FROM_OUTBOX] - sagaId: {}, type: {}", outBox.getSagaId(), outBox.getType());
+
+        try {
+            switch (outBox.getType()) {
+                case BaseOutBoxConstants.Type.USER_REGISTER_SHOP_COMPLETION ->
+                        kafkaProducer.sendMessageRegisterShopSuccessful(outBox.getValue());
+                case BaseOutBoxConstants.Type.USER_REGISTER_SHOP_FAILURE ->
+                        kafkaProducer.sendMessageRegisterShopFailure(outBox.getValue());
+            }
+
+            outBox.setStatus(BaseOutBoxConstants.Status.COMPLETION);
+        } catch (Exception e) {
+            log.error("[SEND_OUTBOX_MESSAGE_ERROR] - sagaId: {}, type: {}", outBox.getSagaId(), outBox.getType(), e);
+            outBox.setStatus(BaseOutBoxConstants.Status.FAILED);
+            outBox.setError(e.getMessage());
+        }
     }
 }
