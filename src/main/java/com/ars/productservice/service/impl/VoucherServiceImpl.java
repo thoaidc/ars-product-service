@@ -7,6 +7,7 @@ import com.ars.productservice.dto.response.voucher.VoucherDTO;
 import com.ars.productservice.entity.Voucher;
 import com.ars.productservice.repository.VoucherRepository;
 import com.ars.productservice.service.VoucherService;
+import com.dct.config.common.Common;
 import com.dct.model.common.DateUtils;
 import com.dct.model.constants.BaseDatetimeConstants;
 import com.dct.model.dto.response.BaseResponseDTO;
@@ -52,6 +53,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public BaseResponseDTO createVoucher(SaveVoucherRequestDTO request) {
+        Common.checkShopAuthorities(request.getShopId());
         String nowStr = DateUtils.now().toString(BaseDatetimeConstants.Formatter.YYYY_MM_DD_NORMALIZED);
         int now = Integer.parseInt(nowStr);
         Integer dateStarted = Optional.ofNullable(request.getDateStarted()).orElse(now);
@@ -82,6 +84,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public BaseResponseDTO updateVoucher(SaveVoucherRequestDTO request) {
+        Common.checkShopAuthorities(request.getShopId());
         Voucher voucher = voucherRepository.findById(request.getId()).orElse(null);
         String nowStr = DateUtils.now().toString(BaseDatetimeConstants.Formatter.YYYY_MM_DD_NORMALIZED);
         int now = Integer.parseInt(nowStr);

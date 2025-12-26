@@ -6,6 +6,7 @@ import com.ars.productservice.dto.response.product.ProductGroupDTO;
 import com.ars.productservice.entity.ProductGroup;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.service.ProductGroupService;
+import com.dct.config.common.Common;
 import com.dct.model.dto.response.BaseResponseDTO;
 import com.dct.model.exception.BaseBadRequestException;
 
@@ -46,6 +47,7 @@ public class ProductGroupServiceImpl implements ProductGroupService {
     @Override
     @Transactional
     public BaseResponseDTO save(SaveProductGroupRequest request) {
+        Common.checkShopAuthorities(request.getShopId());
         ProductGroup category;
 
         if (Objects.nonNull(request.getId()) && request.getId() > 0) {

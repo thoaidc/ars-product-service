@@ -29,6 +29,7 @@ import com.ars.productservice.repository.ProductRepository;
 import com.ars.productservice.repository.VoucherRepository;
 import com.ars.productservice.service.ProductService;
 
+import com.dct.config.common.Common;
 import com.dct.config.common.FileUtils;
 import com.dct.model.dto.response.BaseResponseDTO;
 import com.dct.model.exception.BaseBadRequestException;
@@ -139,6 +140,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public BaseResponseDTO create(CreateProductRequest request) {
+        Common.checkShopAuthorities(request.getShopId());
         Product product = new Product();
         product.setShopId(request.getShopId());
         product.setName(request.getName());
@@ -149,6 +151,7 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus(ProductConstants.Status.ACTIVE); // default status
         product.setThumbnailUrl(fileUtils.autoCompressImageAndSave(request.getThumbnail()));
         product.setOriginalImage(fileUtils.save(request.getOriginalImage()));
+        product.setTotalSales(0);
 
         // Map product images
         if (Objects.nonNull(request.getProductImages()) && request.getProductImages().length > 0) {
