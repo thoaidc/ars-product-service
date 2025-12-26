@@ -32,13 +32,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         """;
 
         if (Objects.nonNull(request.getGroupId())) {
-            String joinSql = " JOIN product_product_group ppg ON p.id = ppg.product_id";
+            String joinSql = " JOIN product_product_group ppg ON p.id = ppg.product_id ";
             querySql += joinSql;
             countSql += joinSql;
         }
 
         if (Objects.nonNull(request.getCategoryId())) {
-            String joinSql = " JOIN product_category pc ON p.id = pc.product_id";
+            String joinSql = " JOIN product_category pc ON p.id = pc.product_id ";
             querySql += joinSql;
             countSql += joinSql;
         }
