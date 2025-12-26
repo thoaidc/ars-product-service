@@ -108,6 +108,7 @@ spring:
       user-created: user-created
       user-register-shop-completion: user-register-shop-completion
       user-register-shop-failure: user-register-shop-failure
+      update-product-sale-quantity: update-product-sale-quantity
 
 server:
   servlet:
