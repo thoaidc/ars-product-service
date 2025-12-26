@@ -32,6 +32,7 @@ import com.ars.productservice.service.ProductService;
 import com.dct.config.common.Common;
 import com.dct.config.common.FileUtils;
 import com.dct.model.dto.response.BaseResponseDTO;
+import com.dct.model.event.UpdateProductSaleQuantityEvent;
 import com.dct.model.exception.BaseBadRequestException;
 
 import org.springframework.beans.BeanUtils;
@@ -72,6 +73,16 @@ public class ProductServiceImpl implements ProductService {
         this.fileUtils.setPrefixPath(ProductConstants.Upload.PREFIX);
         this.fileUtils.setUploadDirectory(ProductConstants.Upload.LOCATION);
         this.voucherRepository = voucherRepository;
+    }
+
+    @Override
+    @Transactional
+    public void increaseProductSaleQuantity(UpdateProductSaleQuantityEvent event) {
+        if (event.getAmount() <= 0) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Invalid quantity to update");
+        }
+
+        productRepository.updateProductSaleQuantity(event.getProductId(), event.getAmount());
     }
 
     @Override

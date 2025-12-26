@@ -55,19 +55,19 @@ public class Product extends AbstractAuditingEntity {
     @Column(length = 1000)
     private String description;
 
-    @Column(name = "is_customizable")
+    @Column(name = "is_customizable", nullable = false)
     private Boolean customizable;
 
     @Column(length = 20, nullable = false)
     private String status;
 
-    @Column(name = "thumbnail_url")
+    @Column(name = "thumbnail_url", nullable = false)
     private String thumbnailUrl;
 
     @Column(name = "original_image")
     private String originalImage;
 
-    @Column(name = "total_sales")
+    @Column(name = "total_sales", nullable = false)
     private Integer totalSales;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

@@ -28,4 +28,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, Prod
         nativeQuery = true
     )
     List<ProductCheckOrderInfo> findOrderProductRequest(Iterable<Integer> productIds);
+
+    @Modifying
+    @Query(value = "UPDATE product SET total_sales = total_sales + ?2 WHERE id = ?1", nativeQuery = true)
+    void updateProductSaleQuantity(int productId, int quantityToUpdate);
 }
