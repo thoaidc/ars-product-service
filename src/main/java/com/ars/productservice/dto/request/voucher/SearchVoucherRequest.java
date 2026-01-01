@@ -2,8 +2,11 @@ package com.ars.productservice.dto.request.voucher;
 
 import com.dct.model.dto.request.BaseRequestDTO;
 
+import java.util.Set;
+
 public class SearchVoucherRequest extends BaseRequestDTO {
     private Integer shopId;
+    private Set<String> shopIds;
     private String code;
     private Integer type;
     private Integer active;
@@ -16,6 +19,14 @@ public class SearchVoucherRequest extends BaseRequestDTO {
 
     public void setShopId(Integer shopId) {
         this.shopId = shopId;
+    }
+
+    public Set<String> getShopIds() {
+        return shopIds;
+    }
+
+    public void setShopIds(Set<String> shopIds) {
+        this.shopIds = shopIds;
     }
 
     public String getCode() {

@@ -5,6 +5,7 @@ import com.ars.productservice.dto.request.voucher.SearchVoucherRequest;
 import com.dct.model.dto.response.BaseResponseDTO;
 
 public interface VoucherService {
+    BaseResponseDTO getVoucherForUserOrder(SearchVoucherRequest request);
     BaseResponseDTO getVoucherWithPaging(SearchVoucherRequest request);
     BaseResponseDTO getVoucherDetail(Integer voucherId);
     BaseResponseDTO createVoucher(SaveVoucherRequestDTO request);

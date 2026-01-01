@@ -18,6 +18,28 @@ public class VoucherDTO extends AuditingDTO {
     public VoucherDTO() {}
 
     public VoucherDTO(
+            Integer id,
+            Integer shopId,
+            Integer type,
+            Integer status,
+            String name,
+            String code,
+            BigDecimal value,
+            Integer dateStarted,
+            Integer dateExpired
+    ) {
+        super.setId(id);
+        this.shopId = shopId;
+        this.type = type;
+        this.status = status;
+        this.name = name;
+        this.code = code;
+        this.value = value;
+        this.dateStarted = dateStarted;
+        this.dateExpired = dateExpired;
+    }
+
+    public VoucherDTO(
         Integer id,
         Integer shopId,
         Integer type,

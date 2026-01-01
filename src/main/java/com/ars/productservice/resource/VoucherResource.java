@@ -25,6 +25,11 @@ public class VoucherResource {
         this.voucherService = voucherService;
     }
 
+    @GetMapping("/p/v1/vouchers")
+    public BaseResponseDTO getVouchersForUserOrder(@ModelAttribute SearchVoucherRequest request) {
+        return voucherService.getVoucherForUserOrder(request);
+    }
+
     @GetMapping("/v1/vouchers")
     public BaseResponseDTO getVouchersWithPaging(@ModelAttribute SearchVoucherRequest requestDTO) {
         return voucherService.getVoucherWithPaging(requestDTO);

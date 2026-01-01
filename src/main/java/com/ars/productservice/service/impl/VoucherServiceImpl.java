@@ -32,6 +32,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public BaseResponseDTO getVoucherForUserOrder(SearchVoucherRequest request) {
+        return BaseResponseDTO.builder().ok(voucherRepository.getVoucherForUserOrder(request));
+    }
+
+    @Override
     public BaseResponseDTO getVoucherWithPaging(SearchVoucherRequest request) {
         Page<VoucherDTO> voucherPage = voucherRepository.getWithPaging(request);
         return BaseResponseDTO.builder().total(voucherPage.getTotalElements()).ok(voucherPage.getContent());

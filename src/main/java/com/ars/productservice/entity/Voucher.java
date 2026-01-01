@@ -39,6 +39,25 @@ import java.time.Instant;
                     }
                 )
             }
+        ),
+        @SqlResultSetMapping(
+            name = "voucherGetAllForUser",
+            classes = {
+                @ConstructorResult(
+                    targetClass = VoucherDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Integer.class),
+                        @ColumnResult(name = "shopId", type = Integer.class),
+                        @ColumnResult(name = "type", type = Integer.class),
+                        @ColumnResult(name = "status", type = Integer.class),
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "code", type = String.class),
+                        @ColumnResult(name = "value", type = BigDecimal.class),
+                        @ColumnResult(name = "dateStarted", type = Integer.class),
+                        @ColumnResult(name = "dateExpired", type = Integer.class)
+                    }
+                )
+            }
         )
     }
 )
