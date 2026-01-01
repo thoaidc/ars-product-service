@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, Integer>, VoucherRepositoryCustom {
     @Query(value = """
-            SELECT v.id, v.shop_id as shopId, v.code, v.type, v.status,
+            SELECT v.id, v.shop_id as shopId, v.code, v.type, v.status, v.value,
                    v.date_started as dateStarted, v.date_expired as dateExpired
             FROM voucher v
             WHERE v.id IN ?1
