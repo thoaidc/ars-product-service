@@ -64,7 +64,8 @@ public class ProductServiceImpl implements ProductService {
                               CategoryRepository categoryRepository,
                               ProductGroupRepository productGroupRepository,
                               ProductProductGroupRepository productProductGroupRepository,
-                              ProductCategoryRepository productCategoryRepository, VoucherRepository voucherRepository) {
+                              ProductCategoryRepository productCategoryRepository,
+                              VoucherRepository voucherRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productGroupRepository = productGroupRepository;
@@ -83,6 +84,19 @@ public class ProductServiceImpl implements ProductService {
         }
 
         productRepository.updateProductSaleQuantity(event.getProductId(), event.getAmount());
+    }
+
+    @Override
+    public String getOriginalFilePath(Integer productId) {
+        Optional<String> originalProductImage = productRepository.getProductOriginalImageById(productId);
+
+        if (originalProductImage.isEmpty()) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Product files not found");
+        }
+
+        String prefixPath = ProductConstants.Upload.PREFIX;
+        String location = ProductConstants.Upload.LOCATION;
+        return location + originalProductImage.get().substring(prefixPath.length());
     }
 
     @Override

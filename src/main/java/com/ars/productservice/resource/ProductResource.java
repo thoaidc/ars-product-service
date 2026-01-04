@@ -8,7 +8,12 @@ import com.ars.productservice.service.ProductService;
 import com.dct.model.dto.response.BaseResponseDTO;
 
 import jakarta.validation.Valid;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,6 +46,22 @@ public class ProductResource {
     @GetMapping("/p/v1/products/{productId}")
     public BaseResponseDTO getProductDetail(@PathVariable Integer productId) {
         return productService.getDetail(productId);
+    }
+
+    @GetMapping("/internal/products/files/download/{productId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Integer productId) {
+        String filePathFromDb = productService.getOriginalFilePath(productId);
+        File file = new File(filePathFromDb);
+
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Resource resource = new FileSystemResource(file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .body(resource);
     }
 
     @PostMapping("/internal/products/check-order-info")

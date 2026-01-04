@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer>, ProductRepositoryCustom {
@@ -32,4 +33,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, Prod
     @Modifying
     @Query(value = "UPDATE product SET total_sales = total_sales + ?2 WHERE id = ?1", nativeQuery = true)
     void updateProductSaleQuantity(int productId, int quantityToUpdate);
+
+    @Query(value = "SELECT original_image FROM product WHERE id = ?", nativeQuery = true)
+    Optional<String> getProductOriginalImageById(Integer productId);
 }

@@ -9,6 +9,7 @@ import com.dct.model.event.UpdateProductSaleQuantityEvent;
 
 public interface ProductService {
     void increaseProductSaleQuantity(UpdateProductSaleQuantityEvent event);
+    String getOriginalFilePath(Integer productId);
     BaseResponseDTO getAllWithPaging(SearchProductRequest request);
     BaseResponseDTO getDetail(Integer productId);
     BaseResponseDTO checkOrderInfo(CheckOrderInfoRequestDTO checkOrderInfoRequest);
