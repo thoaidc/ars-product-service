@@ -27,6 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,7 +53,7 @@ public class ProductResource {
     }
 
     @GetMapping("/internal/products/files/download/{productId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Integer productId) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable Integer productId) throws IOException {
         String filePathFromDb = productService.getOriginalFilePath(productId);
         File file = new File(filePathFromDb);
 
@@ -57,9 +61,11 @@ public class ProductResource {
             return ResponseEntity.notFound().build();
         }
 
+        Path path = file.toPath();
+        String contentType = Optional.ofNullable(Files.probeContentType(path)).orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         Resource resource = new FileSystemResource(file);
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/zip"))
+                .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
                 .body(resource);
     }
