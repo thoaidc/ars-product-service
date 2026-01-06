@@ -1,5 +1,6 @@
 package com.ars.productservice.resource;
 
+import com.ars.productservice.dto.request.review.CheckCustomerReviewRequest;
 import com.ars.productservice.dto.request.review.SaveReviewRequest;
 import com.ars.productservice.dto.request.review.SearchReviewRequest;
 import com.ars.productservice.service.ReviewService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +28,11 @@ public class ReviewResource {
     @GetMapping("/p/v1/reviews")
     public BaseResponseDTO getAllWithPaging(@ModelAttribute SearchReviewRequest request) {
         return reviewService.getAllWithPaging(request);
+    }
+
+    @PostMapping("/v1/reviews/check")
+    public BaseResponseDTO checkProductReviewByCustomerId(@Valid @RequestBody CheckCustomerReviewRequest request) {
+        return reviewService.getProductReviewByCustomerId(request);
     }
 
     @PostMapping("/v1/reviews")

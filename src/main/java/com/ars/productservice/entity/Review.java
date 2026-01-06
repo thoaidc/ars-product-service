@@ -1,6 +1,6 @@
 package com.ars.productservice.entity;
 
-import com.ars.productservice.dto.response.shop.ShopDTO;
+import com.ars.productservice.dto.response.review.ReviewDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.ColumnResult;
@@ -20,7 +20,7 @@ import java.time.Instant;
             name = "reviewGetWithPaging",
             classes = {
                 @ConstructorResult(
-                    targetClass = ShopDTO.class,
+                    targetClass = ReviewDTO.class,
                     columns = {
                         @ColumnResult(name = "id", type = Integer.class),
                         @ColumnResult(name = "shopId", type = Integer.class),

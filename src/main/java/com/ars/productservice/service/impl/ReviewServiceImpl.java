@@ -1,6 +1,7 @@
 package com.ars.productservice.service.impl;
 
 import com.ars.productservice.constants.ReviewConstants;
+import com.ars.productservice.dto.request.review.CheckCustomerReviewRequest;
 import com.ars.productservice.dto.request.review.SaveReviewRequest;
 import com.ars.productservice.dto.request.review.SearchReviewRequest;
 import com.ars.productservice.dto.response.review.ReviewDTO;
@@ -32,6 +33,11 @@ public class ReviewServiceImpl implements ReviewService {
         this.reviewRepository = reviewRepository;
         this.fileUtils.setPrefixPath(ReviewConstants.Upload.PREFIX);
         this.fileUtils.setUploadDirectory(ReviewConstants.Upload.LOCATION);
+    }
+
+    @Override
+    public BaseResponseDTO getProductReviewByCustomerId(CheckCustomerReviewRequest request) {
+        return BaseResponseDTO.builder().ok(reviewRepository.getAllByCustomerIdAndProductIds(request));
     }
 
     @Override
