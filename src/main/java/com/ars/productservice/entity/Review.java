@@ -43,6 +43,9 @@ public class Review extends AbstractAuditingEntity {
     @Column(name = "product_id", nullable = false)
     private Integer productId;
 
+    @Column(name = "order_product_id", nullable = false)
+    private Integer orderProductId;
+
     @Column(name = "customer_id", nullable = false)
     private Integer customerId;
 
@@ -54,6 +57,14 @@ public class Review extends AbstractAuditingEntity {
 
     @Column(name = "content", nullable = false)
     private String content;
+
+    public Integer getOrderProductId() {
+        return orderProductId;
+    }
+
+    public void setOrderProductId(Integer orderProductId) {
+        this.orderProductId = orderProductId;
+    }
 
     public Integer getShopId() {
         return shopId;

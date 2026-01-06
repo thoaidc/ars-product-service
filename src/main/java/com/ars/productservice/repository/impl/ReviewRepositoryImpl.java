@@ -56,7 +56,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         """;
         Map<String, Object> params = new HashMap<>();
         StringBuilder whereConditions = new StringBuilder(SqlUtils.WHERE_DEFAULT);
-        SqlUtils.addInCondition(whereConditions, params, "r.product_id", request.getProductIds());
+        SqlUtils.addInCondition(whereConditions, params, "r.order_product_id", request.getProductIds());
         SqlUtils.addEqualCondition(whereConditions, params, "r.customer_id", request.getCustomerId());
         SqlUtils.setOrderByDecreasing(whereConditions, "r.id");
         return SqlUtils.queryBuilder(entityManager)

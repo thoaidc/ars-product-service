@@ -23,6 +23,8 @@ public class SaveReviewRequest {
         private Integer shopId;
         @NotNull
         private Integer productId;
+        @NotNull
+        private Integer orderProductId;
         @NotBlank
         private String content;
         private MultipartFile image;
@@ -41,6 +43,14 @@ public class SaveReviewRequest {
 
         public void setProductId(Integer productId) {
             this.productId = productId;
+        }
+
+        public Integer getOrderProductId() {
+            return orderProductId;
+        }
+
+        public void setOrderProductId(Integer orderProductId) {
+            this.orderProductId = orderProductId;
         }
 
         public String getContent() {
