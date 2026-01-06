@@ -1,12 +1,41 @@
 package com.ars.productservice.entity;
 
+import com.ars.productservice.dto.response.shop.ShopDTO;
 import com.dct.config.entity.AbstractAuditingEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.Entity;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "review")
+@SqlResultSetMappings(
+    {
+        @SqlResultSetMapping(
+            name = "reviewGetWithPaging",
+            classes = {
+                @ConstructorResult(
+                    targetClass = ShopDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Integer.class),
+                        @ColumnResult(name = "shopId", type = Integer.class),
+                        @ColumnResult(name = "productId", type = Integer.class),
+                        @ColumnResult(name = "customerId", type = Integer.class),
+                        @ColumnResult(name = "customerName", type = String.class),
+                        @ColumnResult(name = "image", type = String.class),
+                        @ColumnResult(name = "content", type = String.class),
+                        @ColumnResult(name = "createdDate", type = Instant.class)
+                    }
+                )
+            }
+        )
+    }
+)
 public class Review extends AbstractAuditingEntity {
     @Column(name = "shop_id", nullable = false)
     private Integer shopId;
