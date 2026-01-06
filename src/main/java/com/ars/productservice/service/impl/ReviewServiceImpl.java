@@ -44,7 +44,7 @@ public class ReviewServiceImpl implements ReviewService {
     public BaseResponseDTO saveReview(SaveReviewRequest request) {
         BaseUserDTO userDTO = Common.checkUserAuthorities(request.getCustomerId());
 
-        if (Objects.equals(userDTO.getId(), request.getCustomerId())) {
+        if (!Objects.equals(userDTO.getId(), request.getCustomerId())) {
             throw new BaseBadRequestException(ENTITY_NAME, "You do not have any permission to perform this function");
         }
 
