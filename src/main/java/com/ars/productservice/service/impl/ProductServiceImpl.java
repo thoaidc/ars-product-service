@@ -13,6 +13,7 @@ import com.ars.productservice.dto.response.product.ProductDTO;
 import com.ars.productservice.dto.response.product.ProductGroupDTO;
 import com.ars.productservice.dto.response.product.ProductImageDTO;
 import com.ars.productservice.dto.response.product.ProductOptionDTO;
+import com.ars.productservice.dto.response.shop.ShopDTO;
 import com.ars.productservice.entity.Category;
 import com.ars.productservice.entity.Product;
 import com.ars.productservice.entity.ProductCategory;
@@ -21,11 +22,13 @@ import com.ars.productservice.entity.ProductImage;
 import com.ars.productservice.entity.ProductOption;
 import com.ars.productservice.entity.ProductOptionValue;
 import com.ars.productservice.entity.ProductProductGroup;
+import com.ars.productservice.entity.Shop;
 import com.ars.productservice.repository.CategoryRepository;
 import com.ars.productservice.repository.ProductCategoryRepository;
 import com.ars.productservice.repository.ProductGroupRepository;
 import com.ars.productservice.repository.ProductProductGroupRepository;
 import com.ars.productservice.repository.ProductRepository;
+import com.ars.productservice.repository.ShopRepository;
 import com.ars.productservice.repository.VoucherRepository;
 import com.ars.productservice.service.ProductService;
 
@@ -59,13 +62,14 @@ public class ProductServiceImpl implements ProductService {
     private final ProductProductGroupRepository productProductGroupRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final VoucherRepository voucherRepository;
+    private final ShopRepository shopRepository;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
                               ProductGroupRepository productGroupRepository,
                               ProductProductGroupRepository productProductGroupRepository,
                               ProductCategoryRepository productCategoryRepository,
-                              VoucherRepository voucherRepository) {
+                              VoucherRepository voucherRepository, ShopRepository shopRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productGroupRepository = productGroupRepository;
@@ -74,6 +78,7 @@ public class ProductServiceImpl implements ProductService {
         this.fileUtils.setPrefixPath(ProductConstants.Upload.PREFIX);
         this.fileUtils.setUploadDirectory(ProductConstants.Upload.LOCATION);
         this.voucherRepository = voucherRepository;
+        this.shopRepository = shopRepository;
     }
 
     @Override
@@ -116,6 +121,13 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = productOptional.get();
+        Optional<Shop> shopOptional = shopRepository.findById(product.getShopId());
+
+        if (shopOptional.isEmpty()) {
+            throw new BaseBadRequestException(ENTITY_NAME, "Shop not exists");
+        }
+
+        Shop shop = shopOptional.get();
         ProductDTO productDTO = new ProductDTO();
         BeanUtils.copyProperties(product, productDTO, "images", "options", "categories", "productGroups");
 
@@ -149,6 +161,12 @@ public class ProductServiceImpl implements ProductService {
         productDTO.setCategories(categoryDTOS);
         productDTO.setProductGroups(productGroupDTOS);
         productDTO.setProductOptions(productOptionDTOS);
+        ShopDTO shopDTO = new ShopDTO();
+        shopDTO.setId(shopDTO.getId());
+        shopDTO.setOwnerId(shop.getOwnerId());
+        shopDTO.setDescription(shop.getDescription());
+        shopDTO.setName(shop.getName());
+        productDTO.setShopInfo(shopDTO);
         return BaseResponseDTO.builder().ok(productDTO);
     }
 

@@ -1,6 +1,7 @@
 package com.ars.productservice.dto.response.product;
 
 import com.ars.productservice.dto.response.category.CategoryDTO;
+import com.ars.productservice.dto.response.shop.ShopDTO;
 import com.dct.model.dto.response.AuditingDTO;
 
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ public class ProductDTO extends AuditingDTO {
     private List<CategoryDTO> categories = new ArrayList<>();
     private List<ProductGroupDTO> productGroups = new ArrayList<>();
     private List<ProductOptionDTO> productOptions = new ArrayList<>();
+    private ShopDTO shopInfo;
 
     public ProductDTO() {}
 
@@ -49,6 +51,14 @@ public class ProductDTO extends AuditingDTO {
         this.status = status;
         this.thumbnailUrl = thumbnailUrl;
         this.totalSales = totalSales;
+    }
+
+    public ShopDTO getShopInfo() {
+        return shopInfo;
+    }
+
+    public void setShopInfo(ShopDTO shopInfo) {
+        this.shopInfo = shopInfo;
     }
 
     public Integer getShopId() {
