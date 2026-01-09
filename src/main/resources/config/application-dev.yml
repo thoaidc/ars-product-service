@@ -147,7 +147,7 @@ app:
       - /actuator/**
       - /api/internal/**
       - /favicon.ico
-      - /uploads/products/**
+      - /uploads/**
       - /
     external-service-public-request-patterns:
       - /api/p/**
