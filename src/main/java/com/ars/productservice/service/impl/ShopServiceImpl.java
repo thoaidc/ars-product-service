@@ -3,6 +3,7 @@ package com.ars.productservice.service.impl;
 import com.ars.productservice.constants.ExceptionConstants;
 import com.ars.productservice.constants.ProductConstants;
 import com.ars.productservice.constants.ShopConstants;
+import com.ars.productservice.dto.UserIDRequest;
 import com.ars.productservice.dto.mapping.ShopInfoLogin;
 import com.ars.productservice.dto.request.shop.UpdateShopRequestDTO;
 import com.ars.productservice.dto.response.shop.ShopDTO;
@@ -213,5 +214,10 @@ public class ShopServiceImpl implements ShopService {
         shopRepository.updateShopStatusById(shopId, ShopConstants.Status.INACTIVE);
         productRepository.updateStatusByShopId(shopId, ProductConstants.Status.INACTIVE);
         return BaseResponseDTO.builder().ok();
+    }
+
+    @Override
+    public BaseResponseDTO getUserByIds(UserIDRequest request) {
+        return BaseResponseDTO.builder().ok(shopRepository.findUserDTOByIds(request.getIds()));
     }
 }

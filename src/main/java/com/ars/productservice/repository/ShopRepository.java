@@ -1,12 +1,14 @@
 package com.ars.productservice.repository;
 
 import com.ars.productservice.dto.mapping.ShopInfoLogin;
+import com.ars.productservice.dto.mapping.UserDTOMapping;
 import com.ars.productservice.entity.Shop;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +21,7 @@ public interface ShopRepository extends JpaRepository<Shop, Integer>, ShopReposi
     void updateShopStatusById(Integer shopId, String status);
 
     boolean existsByOwnerIdAndName(Integer ownerId, String name);
+
+    @Query(value = "select id, name from shop where id in ?", nativeQuery = true)
+    List<UserDTOMapping> findUserDTOByIds(Iterable<Integer> ids);
 }

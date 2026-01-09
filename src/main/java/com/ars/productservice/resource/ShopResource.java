@@ -1,5 +1,6 @@
 package com.ars.productservice.resource;
 
+import com.ars.productservice.dto.UserIDRequest;
 import com.ars.productservice.dto.request.shop.UpdateShopRequestDTO;
 import com.ars.productservice.service.ShopService;
 import com.dct.model.dto.request.BaseRequestDTO;
@@ -29,6 +30,11 @@ public class ShopResource {
     @GetMapping("/internal/shops/login-info/{userId}")
     public BaseResponseDTO getShopLoginInfo(@PathVariable @NotNull Integer userId) {
         return shopService.getShopLoginInfo(userId);
+    }
+
+    @PostMapping("/internal/shops/by-ids")
+    public BaseResponseDTO getByIds(@RequestBody UserIDRequest request) {
+        return shopService.getUserByIds(request);
     }
 
     @GetMapping("/v1/shops")

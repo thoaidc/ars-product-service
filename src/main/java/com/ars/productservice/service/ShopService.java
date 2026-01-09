@@ -1,5 +1,6 @@
 package com.ars.productservice.service;
 
+import com.ars.productservice.dto.UserIDRequest;
 import com.ars.productservice.dto.request.shop.UpdateShopRequestDTO;
 import com.dct.model.dto.request.BaseRequestDTO;
 import com.dct.model.dto.response.BaseResponseDTO;
@@ -14,4 +15,5 @@ public interface ShopService {
     BaseResponseDTO updateShopInfo(UpdateShopRequestDTO requestDTO);
     BaseResponseDTO activateShop(Integer shopId);
     BaseResponseDTO inactiveShop(Integer shopId);
+    BaseResponseDTO getUserByIds(UserIDRequest request);
 }
